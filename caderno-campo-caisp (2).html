@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#1D9E75" />
+<title>Caderno de Campo · CAISP</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #1D9E75;
+    --green-light: #EAF3DE;
+    --green-dark: #0F6E56;
+    --amber: #EF9F27;
+    --amber-light: #FAEEDA;
+    --blue: #378ADD;
+    --blue-light: #E6F1FB;
+    --red: #E24B4A;
+    --bg: #F4F6F3;
+    --surface: #FFFFFF;
+    --surface2: #F0F2EF;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --text: #1A1F1C;
+    --text2: #5A6560;
+    --text3: #9AA39E;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: var(--bg);
+  }
+
+  /* ── UTILS ── */
+  .hidden { display: none !important; }
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .tag-green { background: var(--green-light); color: var(--green-dark); }
+  .tag-amber { background: var(--amber-light); color: #854F0B; }
+  .tag-blue  { background: var(--blue-light);  color: #0C447C; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1A1F1C;
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── LOGIN ── */
+  #screen-login {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: var(--bg);
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .login-logo-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--green);
+    border-radius: 24px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-logo-icon svg { width: 44px; height: 44px; fill: white; }
+  .login-title { font-size: 22px; font-weight: 600; color: var(--text); }
+  .login-sub { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  .login-card {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; font-weight: 500; }
+  .field input {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: var(--green); background: #fff; }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); opacity: 0.9; }
+  .btn-green { background: var(--green); color: white; }
+  .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+
+  .login-hint { font-size: 12px; color: var(--text3); text-align: center; margin-top: 1rem; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .topbar-name { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .topbar-prop { font-size: 11px; color: var(--text2); }
+  .topbar-logout {
+    background: none; border: none; cursor: pointer;
+    font-size: 12px; color: var(--green); font-family: 'DM Sans', sans-serif;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  .topbar-logout:hover { background: var(--green-light); }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    padding-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottomnav {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    z-index: 50;
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 0 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .nav-btn svg {
+    width: 22px; height: 22px;
+    stroke: var(--text3);
+    fill: none;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-btn span { font-size: 10px; color: var(--text3); font-family: 'DM Sans', sans-serif; }
+  .nav-btn.active svg { stroke: var(--green); }
+  .nav-btn.active span { color: var(--green); font-weight: 600; }
+
+  /* ── SECTION TITLE ── */
+  .sec-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 8px;
+  }
+
+  /* ── METRIC CARDS ── */
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 14px 12px;
+  }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .metric-val { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+  .metric-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 12px 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .card-body { padding: 0; }
+
+  /* ── PLANTIO LIST ── */
+  .plantio-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .plantio-row:last-child { border-bottom: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: var(--green); }
+  .dot-amber { background: var(--amber); }
+  .dot-blue  { background: var(--blue); }
+  .plantio-info { flex: 1; min-width: 0; }
+  .plantio-nome { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .plantio-det  { font-size: 11px; color: var(--text2); }
+  .plantio-data { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+
+  /* ── FORM ── */
+  .form-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+  }
+  .form-title { font-size: 18px; font-weight: 600; color: var(--text); }
+
+  .form-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .form-card label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; font-weight: 500; }
+  .form-card input,
+  .form-card select,
+  .form-card textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-card input:focus,
+  .form-card select:focus,
+  .form-card textarea:focus { border-color: var(--green); background: #fff; }
+  .form-card textarea { resize: none; height: 80px; line-height: 1.5; }
+
+  /* ── AUDIO ── */
+  .audio-box {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    border: 1px dashed var(--border2);
+    padding: 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .audio-label { font-size: 12px; color: var(--text2); text-align: center; }
+  .audio-record-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--border2);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .audio-record-btn svg { width: 28px; height: 28px; stroke: var(--text2); fill: none; stroke-width: 1.8; stroke-linecap: round; }
+  .audio-record-btn.rec { border-color: var(--red); animation: rec-pulse 1s infinite; }
+  .audio-record-btn.rec svg { stroke: var(--red); }
+  @keyframes rec-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(226,75,74,0.3); }
+    50%      { box-shadow: 0 0 0 10px rgba(226,75,74,0); }
+  }
+  .audio-status { font-size: 12px; color: var(--text2); }
+  .transcribed {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--green);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .transcribed-lbl { font-size: 11px; color: var(--green); font-weight: 600; margin-bottom: 4px; }
+  .transcribed-txt { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .btn-fill {
+    width: 100%;
+    padding: 9px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+
+  /* ── MAPA ── */
+  .map-wrap {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .map-area {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #D4E8C2;
+    position: relative;
+    overflow: hidden;
+  }
+  .map-area-bg {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px
+    );
+  }
+  .talhao {
+    position: absolute;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .talhao:hover { opacity: 0.85; }
+  .talhao span { font-size: 9px; font-weight: 400; margin-top: 1px; }
+  .t1 { left:8%; top:8%; width:30%; height:25%; background:rgba(29,158,117,0.3); border:2px solid #0F6E56; color:#0F6E56; }
+  .t2 { left:8%; top:37%; width:30%; height:25%; background:rgba(239,159,39,0.3); border:2px solid #BA7517; color:#7A4D0A; }
+  .t3 { left:43%; top:8%; width:50%; height:35%; background:rgba(55,138,221,0.25); border:2px solid #185FA5; color:#0C447C; }
+  .t4 { left:8%; top:66%; width:82%; height:22%; background:rgba(29,158,117,0.2); border:2px solid #1D9E75; color:#085041; }
+  .map-footer {
+    padding: 10px 14px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+  }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .map-upload {
+    margin: 0 12px 12px;
+    padding: 10px 12px;
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    font-size: 13px; color: var(--text2);
+    background: var(--surface2);
+  }
+  .map-upload svg { width: 18px; height: 18px; stroke: var(--text3); fill: none; stroke-width: 1.8; }
+  #croqui-img {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; inset: 0;
+  }
+
+  /* ── RELATÓRIOS ── */
+  .rel-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .rel-head {
+    padding: 12px 1rem;
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .rel-cultura { font-size: 14px; font-weight: 600; color: var(--text); }
+  .rel-data { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .rel-body {
+    border-top: 1px solid var(--border);
+    padding: 12px 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .rel-field-lbl { font-size: 11px; color: var(--text2); }
+  .rel-field-val { font-size: 13px; font-weight: 500; color: var(--text); margin-top: 1px; }
+  .rel-field-full { grid-column: 1 / -1; }
+
+  /* ── LOADING ── */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem; color: var(--text3); font-size: 14px;
+    gap: 8px;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty {
+    text-align: center; padding: 2rem 1rem;
+    font-size: 14px; color: var(--text3);
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- TOAST -->
+  <div id="toast"></div>
+
+  <!-- ═══════════════════════════════ LOGIN ═══════════════════════════════ -->
+  <div id="screen-login">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 44 44"><path d="M22 4C12.06 4 4 12.06 4 22s8.06 18 18 18 18-8.06 18-18S31.94 4 22 4zm0 6.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 25.4c-4.56 0-8.6-2.15-11.2-5.5.56-3.7 5.6-5.9 11.2-5.9s10.64 2.2 11.2 5.9c-2.6 3.35-6.64 5.5-11.2 5.5z"/></svg>
+      </div>
+      <div class="login-title">Caderno de Campo</div>
+      <div class="login-sub">CAISP · Horticultura</div>
+    </div>
+    <div class="login-card">
+      <div class="field">
+        <label>Usuário</label>
+        <input type="text" id="inp-user" placeholder="seu.nome" autocomplete="username" autocapitalize="none" />
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="inp-pass" placeholder="••••••" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-green" id="btn-login" onclick="doLogin()">Entrar</button>
+      <div class="login-hint">Acesso fornecido pela CAISP. Dúvidas? Fale pelo WhatsApp.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+  <div id="screen-main" class="hidden" style="display:flex;flex-direction:column;flex:1;">
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="avatar" id="av">JS</div>
+        <div>
+          <div class="topbar-name" id="tn">Carregando...</div>
+          <div class="topbar-prop" id="tp">CAISP</div>
+        </div>
+      </div>
+      <button class="topbar-logout" onclick="doLogout()">Sair</button>
+    </div>
+
+    <!-- TABS CONTENT -->
+    <div id="tab-inicio" class="content">
+      <div>
+        <div class="sec-title">Resumo da propriedade</div>
+        <div class="metrics" id="metrics-area">
+          <div class="loading" style="grid-column:1/-1;"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-title">Últimos plantios</div>
+        <div class="card" id="ultimos-area">
+          <div class="loading"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-registrar" class="content hidden">
+      <div class="form-header">
+        <div class="form-title">Novo plantio</div>
+      </div>
+
+      <!-- ÁUDIO -->
+      <div class="audio-box">
+        <div class="audio-label">Grave um áudio para preencher automaticamente</div>
+        <button class="audio-record-btn" id="audio-btn" onclick="toggleAudio()">
+          <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+        </button>
+        <div class="audio-status" id="audio-status">Toque para gravar</div>
+        <div id="transcribed-area" class="hidden" style="width:100%;display:flex;flex-direction:column;gap:8px;">
+          <div class="transcribed">
+            <div class="transcribed-lbl">Transcrito via IA</div>
+            <div class="transcribed-txt" id="transcribed-txt"></div>
+          </div>
+          <button class="btn-fill" onclick="fillForm()">Preencher campos automaticamente</button>
+        </div>
+      </div>
+
+      <!-- FORMULÁRIO -->
+      <div class="form-card">
+        <div>
+          <label>Talhão *</label>
+          <select id="f-talhao">
+            <option value="">Selecione o talhão</option>
+            <option>Talhão 1</option><option>Talhão 2</option><option>Talhão 3</option>
+            <option>Talhão 4</option><option>Talhão 5</option><option>Talhão 6</option>
+          </select>
+        </div>
+        <div>
+          <label>Cultura *</label>
+          <input type="text" id="f-cultura" placeholder="Ex: Alface, Rúcula, Couve..." />
+        </div>
+        <div>
+          <label>Variedade *</label>
+          <input type="text" id="f-variedade" placeholder="Ex: Vanda, Geórgia, Glória..." />
+        </div>
+        <div>
+          <label>Quantidade de bandejas *</label>
+          <input type="number" id="f-bandejas" placeholder="Ex: 80" min="1" oninput="calcCelulas()" />
+        </div>
+        <div>
+          <label>Células por bandeja</label>
+          <select id="f-celulas" onchange="calcCelulas()">
+            <option value="">Selecione</option>
+            <option value="72">72 células</option>
+            <option value="128">128 células</option>
+            <option value="200">200 células</option>
+            <option value="288">288 células</option>
+            <option value="392">392 células</option>
+          </select>
+        </div>
+        <div id="f-total-celulas-box" style="display:none;">
+          <label>Total de células</label>
+          <div style="padding:10px 12px;font-size:15px;font-weight:600;color:var(--green);background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2);" id="f-total-celulas">—</div>
+        </div>
+        <div>
+          <label>Data do plantio *</label>
+          <input type="date" id="f-data" />
+        </div>
+        <div>
+          <label>Insumos utilizados</label>
+          <textarea id="f-insumos" placeholder="Ex: NPK 10-10-10 — 2kg, Substrato Tropstrato — 5 sacos..."></textarea>
+        </div>
+        <div>
+          <label>Observações</label>
+          <textarea id="f-obs" placeholder="Anotações gerais, condições do talhão..."></textarea>
+        </div>
+        <button class="btn btn-green" id="btn-salvar" onclick="salvarPlantio()">Salvar registro</button>
+      </div>
+    </div>
+
+    <div id="tab-mapa" class="content hidden">
+      <div class="sec-title">Mapa da propriedade</div>
+      <div class="map-wrap">
+        <div class="map-area" id="map-area">
+          <div class="map-area-bg"></div>
+          <img id="croqui-img" class="hidden" alt="Croqui" />
+          <div class="talhao t1" id="mapa-t1">T1<span>Alface</span></div>
+          <div class="talhao t2" id="mapa-t2">T2<span>Rúcula</span></div>
+          <div class="talhao t3" id="mapa-t3">T3<span>Couve</span></div>
+          <div class="talhao t4" id="mapa-t4">T4<span>Salsa</span></div>
+        </div>
+        <div class="map-footer">
+          <div class="leg"><div class="leg-dot" style="background:#1D9E75;"></div> Plantado</div>
+          <div class="leg"><div class="leg-dot" style="background:#EF9F27;"></div> Em preparo</div>
+          <div class="leg"><div class="leg-dot" style="background:#378ADD;"></div> Irrigando</div>
+          <div class="leg"><div class="leg-dot" style="background:#ccc;"></div> Vazio</div>
+        </div>
+        <label class="map-upload" for="croqui-input">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Enviar foto do croqui da propriedade
+          <input type="file" id="croqui-input" accept="image/*" style="display:none;" onchange="uploadCroqui(this)" />
+        </label>
+      </div>
+    </div>
+
+    <div id="tab-relatorios" class="content hidden">
+      <div class="sec-title">Histórico de plantios</div>
+      <div id="rel-area">
+        <div class="loading"><div class="spinner"></div> Carregando...</div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottomnav">
+      <button class="nav-btn active" id="nav-inicio" onclick="switchTab('inicio')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+      </button>
+      <button class="nav-btn" id="nav-registrar" onclick="switchTab('registrar')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>Registrar</span>
+      </button>
+      <button class="nav-btn" id="nav-mapa" onclick="switchTab('mapa')">
+        <svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+        <span>Mapa</span>
+      </button>
+      <button class="nav-btn" id="nav-relatorios" onclick="switchTab('relatorios')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Relatórios</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── CONFIG SUPABASE ──
+const SUPA_URL = 'https://ubpmtskgczzonpbhufel.supabase.co';
+const SUPA_KEY = 'sb_publishable_e2RmDINxjS_6WCVtAjdT8w_Q3Lg_2Yy';
+const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let currentProdutor = null;
+
+// ── TOAST ──
+function toast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ── LOGIN ──
+async function doLogin() {
+  const u = document.getElementById('inp-user').value.trim().toLowerCase();
+  const p = document.getElementById('inp-pass').value.trim();
+  if (!u || !p) { toast('Preencha usuário e senha.'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.textContent = 'Entrando...';
+  btn.disabled = true;
+  try {
+    const { data, error } = await db
+      .from('produtores')
+      .select('*')
+      .eq('usuario', u)
+      .eq('senha', p)
+      .single();
+    if (error || !data) {
+      toast('Usuário ou senha incorretos.');
+      btn.textContent = 'Entrar';
+      btn.disabled = false;
+      return;
+    }
+    currentProdutor = data;
+    const initials = data.nome.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    document.getElementById('av').textContent = initials;
+    document.getElementById('tn').textContent = data.nome;
+    document.getElementById('tp').textContent = (data.propriedade || 'CAISP') + (data.area_ha ? ' · ' + data.area_ha + ' ha' : '');
+    document.getElementById('screen-login').style.display = 'none';
+    document.getElementById('screen-main').classList.remove('hidden');
+    document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
+    loadInicio();
+  } catch(e) {
+    toast('Erro de conexão. Verifique a internet.');
+    btn.textContent = 'Entrar';
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('inp-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('inp-user').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('inp-pass').focus();
+});
+
+function doLogout() {
+  currentProdutor = null;
+  document.getElementById('screen-main').classList.add('hidden');
+  document.getElementById('screen-login').style.display = '';
+  document.getElementById('inp-pass').value = '';
+}
+
+// ── TABS ──
+const TABS = ['inicio','registrar','mapa','relatorios'];
+function switchTab(tab) {
+  TABS.forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('hidden', t!==tab);
+    document.getElementById('nav-'+t).classList.toggle('active', t===tab);
+  });
+  if (tab==='inicio') loadInicio();
+  if (tab==='relatorios') loadRelatorios();
+}
+
+// ── DASHBOARD ──
+async function loadInicio() {
+  if (!currentProdutor) return;
+  const pid = currentProdutor.id;
+
+  // Buscar todos os plantios deste produtor
+  const { data: plantios } = await db
+    .from('plantios')
+    .select('*')
+    .eq('produtor_id', pid)
+    .order('data_plantio', { ascending: false });
+
+  const lista = plantios || [];
+
+  // Métricas
+  const mesAtual = new Date().getMonth();
+  const anoAtual = new Date().getFullYear();
+  const doMes = lista.filter(p => {
+    if (!p.data_plantio) return false;
+    const d = new Date(p.data_plantio);
+    return d.getMonth()===mesAtual && d.getFullYear()===anoAtual;
+  });
+  const talhoes = [...new Set(lista.map(p=>p.talhao).filter(Boolean))];
+  const bandejasMes = doMes.reduce((s,p) => s + (parseInt(p.bandejas)||0), 0);
+  const variedades = [...new Set(lista.map(p=>p.variedade).filter(Boolean))];
+
+  document.getElementById('metrics-area').innerHTML = `
+    <div class="metric"><div class="metric-label">Talhões usados</div><div class="metric-val">${talhoes.length}</div><div class="metric-sub">histórico total</div></div>
+    <div class="metric"><div class="metric-label">Plantios este mês</div><div class="metric-val">${doMes.length}</div><div class="metric-sub">${new Date().toLocaleDateString('pt-BR',{month:'long'})}</div></div>
+    <div class="metric"><div class="metric-label">Bandejas este mês</div><div class="metric-val">${bandejasMes}</div><div class="metric-sub">unidades</div></div>
+    <div class="metric"><div class="metric-label">Variedades</div><div class="metric-val">${variedades.length}</div><div class="metric-sub">em uso</div></div>
+  `;
+
+  // Últimos 5 plantios
+  const cores = ['dot-green','dot-amber','dot-blue','dot-green','dot-amber'];
+  if (!lista.length) {
+    document.getElementById('ultimos-area').innerHTML = '<div class="empty">Nenhum plantio registrado ainda.</div>';
+    return;
+  }
+  const rows = lista.slice(0,5).map((p,i)=>`
+    <div class="plantio-row">
+      <div class="dot ${cores[i%3]}"></div>
+      <div class="plantio-info">
+        <div class="plantio-nome">${p.cultura||'—'} · ${p.talhao||'—'}</div>
+        <div class="plantio-det">${p.bandejas||'—'} bandejas · ${p.variedade||'—'}</div>
+      </div>
+      <div class="plantio-data">${p.data_plantio ? new Date(p.data_plantio+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '—'}</div>
+    </div>
+  `).join('');
+  document.getElementById('ultimos-area').innerHTML = `<div class="card-body">${rows}</div>`;
+}
+
+// ── RELATÓRIOS ──
+async function loadRelatorios() {
+  if (!currentProdutor) return;
+  document.getElementById('rel-area').innerHTML = '<div class="loading"><div class="spinner"></div> Carregando...</div>';
+  const { data: plantios } = await db
+    .from('plantios')
+    .select('*')
+    .eq('produtor_id', currentProdutor.id)
+    .order('data_plantio', { ascending: false });
+
+  const lista = plantios || [];
+  if (!lista.length) {
+    document.getElementById('rel-area').innerHTML = '<div class="empty">Nenhum plantio registrado ainda.<br>Use a aba Registrar para adicionar.</div>';
+    return;
+  }
+
+  const tagCores = ['tag-green','tag-amber','tag-blue'];
+  const html = lista.map((p,i) => `
+    <div class="rel-card">
+      <div class="rel-head">
+        <div>
+          <div class="rel-cultura">${p.cultura||'—'} · ${p.variedade||'—'}</div>
+          <div class="rel-data">Plantio ${p.data_plantio ? new Date(p.data_plantio+'T12:00:00').toLocaleDateString('pt-BR') : '—'}</div>
+        </div>
+        <span class="tag ${tagCores[i%3]}">${p.talhao||'—'}</span>
+      </div>
+      <div class="rel-body">
+        <div><div class="rel-field-lbl">Bandejas</div><div class="rel-field-val">${p.bandejas||'—'}</div></div>
+        <div><div class="rel-field-lbl">Células/bandeja</div><div class="rel-field-val">${p.celulas_bandeja||'—'}</div></div>
+        <div><div class="rel-field-lbl">Total de células</div><div class="rel-field-val">${p.celulas_bandeja&&p.bandejas?(p.celulas_bandeja*p.bandejas).toLocaleString('pt-BR'):'—'}</div></div>
+        <div><div class="rel-field-lbl">Registrado em</div><div class="rel-field-val">${new Date(p.created_at).toLocaleDateString('pt-BR')}</div></div>
+        ${p.insumos ? `<div class="rel-field-full"><div class="rel-field-lbl">Insumos</div><div class="rel-field-val" style="font-weight:400;font-size:12px;color:var(--text2);">${p.insumos}</div></div>` : ''}
+        ${p.observacoes ? `<div class="rel-field-full"><div class="rel-field-lbl">Observações</div><div class="rel-field-val" style="font-weight:400;font-size:12px;color:var(--text2);">${p.observacoes}</div></div>` : ''}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('rel-area').innerHTML = html;
+}
+
+// ── SALVAR PLANTIO ──
+async function salvarPlantio() {
+  const talhao   = document.getElementById('f-talhao').value;
+  const cultura  = document.getElementById('f-cultura').value.trim();
+  const variedade= document.getElementById('f-variedade').value.trim();
+  const bandejas = document.getElementById('f-bandejas').value;
+  const celulas  = document.getElementById('f-celulas').value;
+  const celulas  = document.getElementById('f-celulas').value;
+  const data     = document.getElementById('f-data').value;
+  const insumos  = document.getElementById('f-insumos').value.trim();
+  const obs      = document.getElementById('f-obs').value.trim();
+
+  if (!talhao || !cultura || !bandejas || !data) {
+    toast('Preencha os campos obrigatórios (*).');
+    return;
+  }
+
+  const btn = document.getElementById('btn-salvar');
+  btn.textContent = 'Salvando...';
+  btn.disabled = true;
+
+  const { error } = await db.from('plantios').insert({
+    produtor_id: currentProdutor.id,
+    talhao, cultura, variedade,
+    bandejas: parseInt(bandejas),
+    celulas_bandeja: celulas ? parseInt(celulas) : null,
+    celulas_bandeja: celulas ? parseInt(celulas) : null,
+    data_plantio: data,
+    insumos: insumos || null,
+    observacoes: obs || null
+  });
+
+  btn.textContent = 'Salvar registro';
+  btn.disabled = false;
+
+  if (error) {
+    toast('Erro ao salvar. Tente novamente.');
+    console.error(error);
+    return;
+  }
+
+  toast('Plantio registrado com sucesso!');
+  // Limpar formulário
+  ['f-talhao','f-cultura','f-variedade','f-bandejas','f-celulas','f-insumos','f-obs'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = id==='f-talhao' ? '' : '';
+  });
+  document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
+  document.getElementById('transcribed-area').classList.add('hidden');
+  document.getElementById('audio-status').textContent = 'Toque para gravar';
+  switchTab('relatorios');
+}
+
+// ── ÁUDIO ──
+let recording = false, timer = null, secs = 0;
+const DEMOS = [
+  'Plantei alface crespa no talhão dois, oitenta bandejas, variedade Vanda, usei NPK dez dez dez dois quilos e substrato tropstrato três sacos, data de hoje.',
+  'Registrar rúcula folha larga, talhão três, sessenta bandejas, sem insumo específico, plantio de hoje.',
+  'Couve manteiga variedade Geórgia no talhão um, cem bandejas, composto orgânico quatro sacos, data de hoje.'
+];
+
+function toggleAudio() {
+  const btn = document.getElementById('audio-btn');
+  const status = document.getElementById('audio-status');
+  if (!recording) {
+    recording = true; secs = 0;
+    btn.classList.add('rec');
+    timer = setInterval(() => { secs++; status.textContent = `● Gravando ${secs}s — toque para parar`; }, 1000);
+  } else {
+    recording = false;
+    clearInterval(timer);
+    btn.classList.remove('rec');
+    status.textContent = 'Processando com IA...';
+    setTimeout(() => {
+      const txt = DEMOS[Math.floor(Math.random()*DEMOS.length)];
+      document.getElementById('transcribed-txt').textContent = txt;
+      document.getElementById('transcribed-area').classList.remove('hidden');
+      status.textContent = 'Transcrito — revise abaixo';
+    }, 1200);
+  }
+}
+
+function fillForm() {
+  const txt = document.getElementById('transcribed-txt').textContent.toLowerCase();
+  const tMap = {'um':'Talhão 1','dois':'Talhão 2','três':'Talhão 3','tres':'Talhão 3','quatro':'Talhão 4','cinco':'Talhão 5','seis':'Talhão 6','1':'Talhão 1','2':'Talhão 2','3':'Talhão 3','4':'Talhão 4'};
+  for (const [k,v] of Object.entries(tMap)) { if (txt.includes('talhão '+k)||txt.includes('talha '+k)) { document.getElementById('f-talhao').value=v; break; } }
+  const culturas = ['alface','rúcula','rucula','couve','salsa','espinafre','agrião','agriao','almeirão','almeirao','chicória','chicoria'];
+  for (const c of culturas) { if (txt.includes(c)) { document.getElementById('f-cultura').value = c[0].toUpperCase()+c.slice(1); break; } }
+  const vars = ['vanda','glória','gloria','geórgia','georgia','folha larga','lisa','americana'];
+  for (const v of vars) { if (txt.includes(v)) { document.getElementById('f-variedade').value = v[0].toUpperCase()+v.slice(1); break; } }
+  const bm = txt.match(/(\d+)\s*bandejas/);
+  if (bm) document.getElementById('f-bandejas').value = bm[1];
+  const ins = [];
+  if (txt.includes('npk')) ins.push('NPK 10-10-10');
+  if (txt.includes('substrato')) ins.push('Substrato Tropstrato');
+  if (txt.includes('composto')) ins.push('Composto orgânico');
+  if (txt.includes('calcário')||txt.includes('calcario')) ins.push('Calcário');
+  if (ins.length) document.getElementById('f-insumos').value = ins.join(', ');
+  if (txt.includes('hoje')) document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
+  toast('Campos preenchidos! Revise antes de salvar.');
+}
+
+
+function calcCelulas() {
+  const b = parseInt(document.getElementById('f-bandejas').value) || 0;
+  const c = parseInt(document.getElementById('f-celulas').value) || 0;
+  const box = document.getElementById('f-total-celulas-box');
+  const tot = document.getElementById('f-total-celulas');
+  if (b && c) {
+    tot.textContent = (b * c).toLocaleString('pt-BR') + ' celulas';
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+// ── CROQUI ──
+function uploadCroqui(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('croqui-img');
+    img.src = e.target.result;
+    img.classList.remove('hidden');
+    // Esconde talhões desenhados
+    document.querySelectorAll('.talhao').forEach(el => el.style.display='none');
+    toast('Croqui carregado!');
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>
