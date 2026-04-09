@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin · CAISP</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--green:#1D9E75;--green-d:#0F6E56;--green-l:#EAF3DE;--red:#E24B4A;--red-l:#FCEBEB;--amber:#EF9F27;--amber-l:#FAEEDA;--blue:#378ADD;--blue-l:#E6F1FB;--bg:#F4F6F3;--surface:#fff;--surface2:#F0F2EF;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);--text:#1A1F1C;--text2:#5A6560;--text3:#9AA39E;--r:10px;--r-sm:7px;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+.app{display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;background:var(--green);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.brand-icon svg{width:20px;height:20px;fill:white;}
+.brand-name{font-size:15px;font-weight:600;}
+.brand-sub{font-size:11px;color:var(--text2);}
+.admin-badge{font-size:11px;font-weight:600;padding:4px 10px;background:var(--green-l);color:var(--green-d);border-radius:20px;}
+.btn-logout{background:none;border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text2);cursor:pointer;}
+.main{display:flex;flex:1;}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:1rem 0;flex-shrink:0;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;}
+.si{display:flex;align-items:center;gap:10px;padding:9px 1.5rem;cursor:pointer;font-size:13px;color:var(--text2);border-left:3px solid transparent;transition:all 0.15s;}
+.si:hover{background:var(--surface2);color:var(--text);}
+.si.active{background:var(--green-l);color:var(--green-d);border-left-color:var(--green);font-weight:600;}
+.si svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.si-sep{height:1px;background:var(--border);margin:6px 1rem;}
+.si-group{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;padding:8px 1.5rem 4px;}
+.content{flex:1;padding:2rem;overflow-y:auto;}
+.page{display:none;}
+.page.active{display:block;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.page-title{font-size:20px;font-weight:600;}
+.page-sub{font-size:13px;color:var(--text2);margin-top:2px;}
+.btn{padding:9px 18px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;border:none;border-radius:var(--r-sm);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;}
+.btn:active{transform:scale(0.98);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:var(--green-d);}
+.btn-red{background:var(--red-l);color:var(--red);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-outline:hover{background:var(--surface2);}
+.btn-amber{background:var(--amber-l);color:#854F0B;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.metric{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px;}
+.metric-lbl{font-size:11px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;}
+.metric-val{font-size:28px;font-weight:600;margin:4px 0 2px;line-height:1;}
+.metric-sub{font-size:11px;color:var(--text3);}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;}
+.chart-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:1.2rem;}
+.chart-card.full{grid-column:1/-1;}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:1rem;}
+.chart-wrap{position:relative;height:220px;}
+.table-wrap{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;overflow-x:auto;margin-bottom:1.5rem;}
+.table-toolbar{padding:12px 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.toolbar-title{font-size:13px;font-weight:600;}
+.search-input{padding:7px 12px;font-size:13px;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);outline:none;width:200px;}
+.search-input:focus{border-color:var(--green);background:#fff;}
+.filter-select{padding:7px 12px;font-size:13px;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);outline:none;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
+thead tr{background:var(--surface2);}
+th{padding:10px 14px;font-size:11px;font-weight:600;color:var(--text2);text-align:left;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+td{padding:11px 14px;font-size:13px;border-top:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:#fafbfa;}
+.td-actions{display:flex;gap:6px;}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.tag-green{background:var(--green-l);color:var(--green-d);}
+.tag-amber{background:var(--amber-l);color:#854F0B;}
+.tag-blue{background:var(--blue-l);color:#0C447C;}
+.tag-red{background:var(--red-l);color:var(--red);}
+.badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.badge-ok{background:var(--green-l);color:var(--green-d);}
+.badge-prox{background:var(--amber-l);color:#854F0B;}
+.badge-atrasado{background:var(--red-l);color:var(--red);}
+.bloq-sim{background:var(--red-l);color:var(--red);font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.bloq-nao{background:var(--green-l);color:var(--green-d);font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.insumo-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);}
+.insumo-row:last-child{border-bottom:none;}
+.insumo-bar-wrap{width:120px;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.insumo-bar{height:100%;background:var(--green);border-radius:3px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--surface);border-radius:14px;padding:1.5rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:1.2rem;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{font-size:12px;color:var(--text2);font-weight:500;}
+.field input,.field select,.field textarea{padding:9px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);outline:none;}
+.field input:focus,.field select:focus{border-color:var(--green);background:#fff;}
+.field textarea{resize:none;height:90px;line-height:1.5;}
+#toast{position:fixed;bottom:2rem;right:2rem;background:#1A1F1C;color:#fff;font-size:13px;padding:10px 18px;border-radius:20px;opacity:0;transition:all 0.3s;z-index:999;pointer-events:none;}
+#toast.show{opacity:1;}
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:500;}
+#login-screen.hidden{display:none;}
+.login-box{background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:2rem;width:340px;}
+.login-logo{text-align:center;margin-bottom:1.5rem;}
+.login-icon{width:64px;height:64px;background:var(--green);border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;}
+.login-icon svg{width:36px;height:36px;fill:white;}
+.login-title{font-size:18px;font-weight:600;}
+.login-sub{font-size:12px;color:var(--text2);margin-top:3px;}
+.login-btn{width:100%;padding:11px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;background:var(--green);color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;margin-top:4px;}
+.login-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:10px;}
+.loading{text-align:center;padding:2rem;color:var(--text3);font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:14px;}
+.form-section{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:1.5rem;max-width:560px;margin-bottom:1.5rem;}
+.form-section-title{font-size:14px;font-weight:600;margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--border);}
+@media(max-width:900px){.metrics{grid-template-columns:1fr 1fr;}.charts-grid{grid-template-columns:1fr;}.sidebar{display:none;}.content{padding:1rem;}}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-icon"><svg viewBox="0 0 44 44"><path d="M22 4C12.06 4 4 12.06 4 22s8.06 18 18 18 18-8.06 18-18S31.94 4 22 4zm0 6.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 25.4c-4.56 0-8.6-2.15-11.2-5.5.56-3.7 5.6-5.9 11.2-5.9s10.64 2.2 11.2 5.9c-2.6 3.35-6.64 5.5-11.2 5.5z"/></svg></div>
+      <div class="login-title">Painel Admin</div>
+      <div class="login-sub">CAISP · Caderno de Campo</div>
+    </div>
+    <div class="field"><label>Usuário</label><input type="text" id="adm-user" value="admin" autocapitalize="none"/></div>
+    <div class="field"><label>Senha</label><input type="password" id="adm-pass" placeholder="••••••"/></div>
+    <button class="login-btn" onclick="adminLogin()">Entrar</button>
+    <div class="login-hint">Acesso restrito à equipe CAISP.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="main-app" style="display:none;">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><svg viewBox="0 0 44 44"><path d="M22 4C12.06 4 4 12.06 4 22s8.06 18 18 18 18-8.06 18-18S31.94 4 22 4zm0 6.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 25.4c-4.56 0-8.6-2.15-11.2-5.5.56-3.7 5.6-5.9 11.2-5.9s10.64 2.2 11.2 5.9c-2.6 3.35-6.64 5.5-11.2 5.5z"/></svg></div>
+      <div><div class="brand-name">CAISP · Caderno de Campo</div><div class="brand-sub">Painel de Administração</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;"><span class="admin-badge">Administrador</span><button class="btn-logout" onclick="adminLogout()">Sair</button></div>
+  </div>
+
+  <div class="main">
+    <div class="sidebar">
+      <div class="si-group">Visão geral</div>
+      <div class="si active" onclick="showPage('dashboard')" id="si-dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+      <div class="si" onclick="showPage('colheitas')" id="si-colheitas"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Prev. Colheita</div>
+      <div class="si" onclick="showPage('plantios')" id="si-plantios"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="12" x2="16" y2="14"/></svg>Todos os Plantios</div>
+      <div class="si" onclick="showPage('insumos')" id="si-insumos"><svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Insumos</div>
+      <div class="si-sep"></div>
+      <div class="si-group">Produtores</div>
+      <div class="si" onclick="showPage('produtores')" id="si-produtores"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Produtores</div>
+      <div class="si" onclick="showPage('novo-produtor')" id="si-novo-produtor"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Novo Produtor</div>
+      <div class="si-sep"></div>
+      <div class="si-group">Qualidade & Docs</div>
+      <div class="si" onclick="showPage('fichas')" id="si-fichas"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Fichas Técnicas</div>
+      <div class="si" onclick="showPage('qualidade')" id="si-qualidade"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Notif. Qualidade</div>
+      <div class="si" onclick="showPage('cotas')" id="si-cotas"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>Cotas</div>
+      <div class="si" onclick="showPage('almoxarifado-adm')" id="si-almoxarifado-adm"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Almoxarifado</div>
+      <div class="si" onclick="showPage('forecast-adm')" id="si-forecast-adm"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Forecast</div>
+      <div class="si" onclick="showPage('talhoes-adm')" id="si-talhoes-adm"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Talhões</div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div><div class="page-title">Dashboard</div><div class="page-sub">Visão geral de todos os produtores</div></div>
+          <button class="btn btn-outline" onclick="loadAll()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Atualizar</button>
+        </div>
+        <div class="metrics" id="dash-metrics"><div class="loading" style="grid-column:1/-1;"><div class="spinner"></div></div></div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-title">Plantios por mês</div><div class="chart-wrap"><canvas id="chart-mes"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Top culturas</div><div class="chart-wrap"><canvas id="chart-cult"></canvas></div></div>
+          <div class="chart-card full"><div class="chart-title">Bandejas e células por mês</div><div class="chart-wrap"><canvas id="chart-band"></canvas></div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><span class="toolbar-title">Resumo por produtor</span></div>
+          <div id="dash-table"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- COLHEITAS -->
+      <div class="page" id="page-colheitas">
+        <div class="page-header">
+          <div><div class="page-title">Previsão de Colheita</div><div class="page-sub">Próximos 60 dias</div></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="filter-select" id="colh-prod" onchange="renderColheitas()"><option value="">Todos</option></select>
+            <button class="btn btn-outline" onclick="exportColheitasCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV</button>
+          </div>
+        </div>
+        <div class="metrics" id="colh-metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:1rem;"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><span class="toolbar-title">Calendário</span></div>
+          <div id="colh-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- PLANTIOS -->
+      <div class="page" id="page-plantios">
+        <div class="page-header">
+          <div><div class="page-title">Todos os Plantios</div><div class="page-sub" id="plant-count"></div></div>
+          <button class="btn btn-outline" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;" id="plant-totais"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar" style="flex-wrap:wrap;gap:8px;">
+            <input class="search-input" type="text" placeholder="Buscar..." oninput="renderPlantios()" id="plant-q"/>
+            <select class="filter-select" id="plant-prod" onchange="renderPlantios()"><option value="">Todos</option></select>
+            <select class="filter-select" id="plant-mes" onchange="renderPlantios()"><option value="">Todos os meses</option></select>
+          </div>
+          <div id="plant-table"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- INSUMOS -->
+      <div class="page" id="page-insumos">
+        <div class="page-header">
+          <div><div class="page-title">Relatório de Insumos</div><div class="page-sub">Consolidado de todos os registros</div></div>
+          <select class="filter-select" id="ins-prod" onchange="renderInsumos()"><option value="">Todos</option></select>
+        </div>
+        <div class="table-wrap"><div class="table-toolbar"><span class="toolbar-title">Insumos mais utilizados</span></div><div id="ins-area"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="table-wrap"><div class="table-toolbar"><span class="toolbar-title">Notas fiscais dos produtores</span></div><div id="nf-adm-area"><div class="loading"><div class="spinner"></div></div></div></div>
+      </div>
+
+      <!-- PRODUTORES -->
+      <div class="page" id="page-produtores">
+        <div class="page-header">
+          <div><div class="page-title">Produtores</div><div class="page-sub" id="prod-count"></div></div>
+          <button class="btn btn-green" onclick="showPage('novo-produtor')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><input class="search-input" type="text" placeholder="Buscar produtor..." oninput="filterProd(this.value)"/></div>
+          <div id="prod-table"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- NOVO PRODUTOR -->
+      <div class="page" id="page-novo-produtor">
+        <div class="page-header"><div><div class="page-title" id="form-prod-title">Novo Produtor</div><div class="page-sub">Preencha os dados</div></div></div>
+        <div class="form-section">
+          <input type="hidden" id="edit-prod-id"/>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field" style="grid-column:1/-1;"><label>Nome completo *</label><input type="text" id="np-nome" placeholder="Ex: João da Silva"/></div>
+            <div class="field"><label>Usuário (login) *</label><input type="text" id="np-usuario" placeholder="joao.silva" autocapitalize="none"/></div>
+            <div class="field"><label>Senha *</label><input type="text" id="np-senha" placeholder="caisp2026"/></div>
+            <div class="field"><label>Propriedade</label><input type="text" id="np-prop" placeholder="Ex: Sítio Boa Vista"/></div>
+            <div class="field"><label>Área (ha)</label><input type="number" id="np-area" placeholder="3.2" step="0.1" min="0"/></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-green" id="btn-salvar-prod" onclick="salvarProdutor()">Salvar produtor</button>
+            <button class="btn btn-outline" onclick="showPage('produtores')">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FICHAS TÉCNICAS -->
+      <div class="page" id="page-fichas">
+        <div class="page-header">
+          <div><div class="page-title">Fichas Técnicas</div><div class="page-sub">Direcione fichas para cada produtor</div></div>
+          <button class="btn btn-green" onclick="openModal('modal-ficha')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova ficha</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <span class="toolbar-title">Fichas cadastradas</span>
+            <select class="filter-select" id="ficha-filter-prod" onchange="renderFichas()"><option value="">Todos os produtores</option></select>
+          </div>
+          <div id="fichas-adm-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- QUALIDADE -->
+      <div class="page" id="page-qualidade">
+        <div class="page-header">
+          <div><div class="page-title">Notificações de Qualidade</div><div class="page-sub">Gerencie ocorrências por produtor</div></div>
+          <button class="btn btn-green" onclick="openModal('modal-qualidade')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova notificação</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <span class="toolbar-title">Notificações</span>
+            <select class="filter-select" id="qual-filter-prod" onchange="renderQualidade()"><option value="">Todos os produtores</option></select>
+          </div>
+          <div id="qual-adm-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- COTAS -->
+      <div class="page" id="page-cotas">
+        <div class="page-header">
+          <div><div class="page-title">Cotas</div><div class="page-sub">Direcione relatórios de cotas por produtor</div></div>
+          <button class="btn btn-green" onclick="openModal('modal-cota')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova cota</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <span class="toolbar-title">Cotas cadastradas</span>
+            <select class="filter-select" id="cota-filter-prod" onchange="renderCotas()"><option value="">Todos os produtores</option></select>
+          </div>
+          <div id="cotas-adm-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ALMOXARIFADO ADM -->
+      <div class="page" id="page-almoxarifado-adm">
+        <div class="page-header">
+          <div><div class="page-title">Almoxarifado</div><div class="page-sub">Notas fiscais registradas pelos produtores</div></div>
+          <select class="filter-select" id="alm-filter-prod" onchange="renderAlmoxarifado()"><option value="">Todos os produtores</option></select>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;" id="alm-totais"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><span class="toolbar-title">Notas fiscais</span></div>
+          <div id="alm-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+      <!-- FORECAST ADM -->
+      <div class="page" id="page-forecast-adm">
+        <div class="page-header">
+          <div><div class="page-title">Forecast Semanal</div><div class="page-sub">Previsões de colheita dos produtores</div></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="filter-select" id="fc-filter-prod" onchange="renderForecast()"><option value="">Todos os produtores</option></select>
+            <select class="filter-select" id="fc-filter-semana" onchange="renderForecast()"><option value="">Todas as semanas</option></select>
+            <button class="btn btn-outline" onclick="exportForecastCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV</button>
+          </div>
+        </div>
+        <div class="metrics" id="fc-metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.5rem;"></div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><span class="toolbar-title">Previsões registradas pelos produtores</span></div>
+          <div id="fc-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- TALHÕES ADM -->
+      <div class="page" id="page-talhoes-adm">
+        <div class="page-header">
+          <div><div class="page-title">Talhões por Produtor</div><div class="page-sub">Talhões configurados por cada produtor</div></div>
+          <select class="filter-select" id="tal-filter-prod" onchange="renderTalhoes()"><option value="">Todos os produtores</option></select>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><span class="toolbar-title">Talhões cadastrados</span></div>
+          <div id="tal-area"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+<!-- MODAL EDITAR PLANTIO -->
+<div class="modal-overlay hidden" id="modal-plantio">
+  <div class="modal">
+    <div class="modal-title">Editar Plantio</div>
+    <input type="hidden" id="ep-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field"><label>Talhão</label><select id="ep-talhao"><option>Talhão 1</option><option>Talhão 2</option><option>Talhão 3</option><option>Talhão 4</option><option>Talhão 5</option><option>Talhão 6</option></select></div>
+      <div class="field"><label>Cultura</label><input type="text" id="ep-cultura"/></div>
+      <div class="field"><label>Variedade</label><input type="text" id="ep-variedade"/></div>
+      <div class="field"><label>Bandejas</label><input type="number" id="ep-bandejas"/></div>
+      <div class="field"><label>Células/bandeja</label><select id="ep-celulas"><option value="">—</option><option value="72">72</option><option value="128">128</option><option value="200">200</option><option value="288">288</option><option value="392">392</option></select></div>
+      <div class="field"><label>Data plantio</label><input type="date" id="ep-data"/></div>
+      <div class="field"><label>Prev. colheita</label><input type="date" id="ep-prev"/></div>
+      <div class="field" style="grid-column:1/-1;"><label>Insumos</label><textarea id="ep-insumos"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-plantio')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarEdicaoPlantio()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FICHA TÉCNICA -->
+<div class="modal-overlay hidden" id="modal-ficha">
+  <div class="modal">
+    <div class="modal-title">Nova Ficha Técnica</div>
+    <input type="hidden" id="ficha-edit-id"/>
+    <div class="field"><label>Produtor *</label><select id="ficha-produtor"><option value="">Selecione o produtor</option></select></div>
+    <div class="field"><label>Título *</label><input type="text" id="ficha-titulo" placeholder="Ex: Manejo de Alface Crespa"/></div>
+    <div class="field"><label>Cultura</label><select id="ficha-cultura" style="width:100%;padding:9px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);outline:none;"><option value="">Selecione a cultura</option>
+<option>ACELGA ORG UN MATRIZ</option>
+<option>ACELGA UN MATRIZ</option>
+<option>AGRIÃO HIDRO UN MATRIZ</option>
+<option>AGRIÃO ORG UN MATRIZ</option>
+<option>AGRIÃO UN MATRIZ</option>
+<option>ALECRIM UN MATRIZ</option>
+<option>ALFACE AMERICANA BOLA UN MATRIZ</option>
+<option>ALFACE BICOLOR HIDRO UN MATRIZ</option>
+<option>ALFACE CRESPA HIDRO UN MATRIZ</option>
+<option>ALFACE CRESPA ORG UN MATRIZ</option>
+<option>ALFACE CRESPA ROXA HIDRO UN MATRIZ</option>
+<option>ALFACE CRESPA ROXA ORG MATRIZ</option>
+<option>ALFACE CRESPA UN MATRIZ</option>
+<option>ALFACE LISA BABY ORG UN MATRIZ</option>
+<option>ALFACE LISA HIDRO UN MATRIZ</option>
+<option>ALFACE LISA ORG UN MATRIZ</option>
+<option>ALFACE LISA UN MATRIZ</option>
+<option>ALFACE MIMOSA HIDRO UN MATRIZ</option>
+<option>ALFACE MIMOSA ORG UN MATRIZ</option>
+<option>ALFACE ROMANA BABY ORG UN MATRIZ</option>
+<option>ALMEIRÃO UN MATRIZ</option>
+<option>BRÓCOLIS NINJA ORG MATRIZ</option>
+<option>BRÓCOLIS NINJA UN MATRIZ</option>
+<option>BRÓCOLIS RAMOSO UN MATRIZ</option>
+<option>CATALÔNIA ORG MATRIZ</option>
+<option>CATALÔNIA UN MATRIZ</option>
+<option>CEBOLINHA HIDRO UN MATRIZ</option>
+<option>CEBOLINHA ORG MATRIZ</option>
+<option>CEBOLINHA UN MATRIZ</option>
+<option>CHEIRO VERDE (SALSA) ORG MATRIZ</option>
+<option>COENTRO HIDRO UN MATRIZ</option>
+<option>COENTRO ORG UN MATRIZ</option>
+<option>COENTRO UN MATRIZ</option>
+<option>COUVE FLOR ORG MATRIZ</option>
+<option>COUVE FLOR UN MATRIZ</option>
+<option>COUVE KALE ORG UN MATRIZ</option>
+<option>COUVE MANTEIGA ORG UN MATRIZ</option>
+<option>COUVE MANTEIGA UN MATRIZ</option>
+<option>ESCAROLA ORG UN MATRIZ</option>
+<option>ESCAROLA UN MATRIZ</option>
+<option>ESPINAFRE ORG UN MATRIZ</option>
+<option>ESPINAFRE UN MATRIZ</option>
+<option>HORTELÃ ORG UN MATRIZ</option>
+<option>HORTELÃ UN MATRIZ</option>
+<option>LOURO UN MATRIZ</option>
+<option>MANJERICÃO ORG UN MATRIZ</option>
+<option>MANJERICÃO UN MATRIZ</option>
+<option>MILHO VERDE ORG KG MATRIZ</option>
+<option>MOSTARDA MATRIZ</option>
+<option>ORÉGANO UN MATRIZ</option>
+<option>RABANETE ORG MATRIZ</option>
+<option>RABANETE UN MATRIZ</option>
+<option>REPOLHO ROXO ORG UN MATRIZ</option>
+<option>REPOLHO VERDE KG MATRIZ</option>
+<option>REPOLHO VERDE ORG UN MATRIZ</option>
+<option>RÚCULA HIDRO UN MATRIZ</option>
+<option>RÚCULA ORG UN MATRIZ</option>
+<option>RÚCULA UN MATRIZ</option>
+<option>SALSA HIDRO UN MATRIZ</option>
+<option>SALSA ORG MATRIZ</option>
+<option>SALSA UN MATRIZ</option>
+<option>TOMILHO UN MATRIZ</option>
+</select></div>
+    <div class="field"><label>Conteúdo da ficha *</label><textarea id="ficha-conteudo" style="height:140px;" placeholder="Descreva as instruções, recomendações e orientações técnicas..."></textarea></div>
+    <div class="field"><label>Arquivo anexo (opcional)</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px dashed var(--border2);border-radius:var(--r-sm);cursor:pointer;background:var(--surface2);font-size:13px;color:var(--text2);" for="ficha-file">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span id="ficha-file-label">Escolher PDF ou imagem</span>
+        <input type="file" id="ficha-file" accept="application/pdf,image/*" style="display:none;" onchange="document.getElementById('ficha-file-label').textContent=this.files[0]?.name||'Escolher arquivo'"/>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-ficha')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarFicha()">Salvar ficha</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QUALIDADE -->
+<div class="modal-overlay hidden" id="modal-qualidade">
+  <div class="modal">
+    <div class="modal-title">Nova Notificação de Qualidade</div>
+    <input type="hidden" id="qual-edit-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="grid-column:1/-1;"><label>Produtor *</label><select id="qual-produtor"><option value="">Selecione o produtor</option></select></div>
+      <div class="field" style="grid-column:1/-1;"><label>Cultura *</label><select id="qual-cultura" style="width:100%;padding:9px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);outline:none;"><option value="">Selecione a cultura</option>
+<option>ACELGA ORG UN MATRIZ</option>
+<option>ACELGA UN MATRIZ</option>
+<option>AGRIÃO HIDRO UN MATRIZ</option>
+<option>AGRIÃO ORG UN MATRIZ</option>
+<option>AGRIÃO UN MATRIZ</option>
+<option>ALECRIM UN MATRIZ</option>
+<option>ALFACE AMERICANA BOLA UN MATRIZ</option>
+<option>ALFACE BICOLOR HIDRO UN MATRIZ</option>
+<option>ALFACE CRESPA HIDRO UN MATRIZ</option>
+<option>ALFACE CRESPA ORG UN MATRIZ</option>
+<option>ALFACE CRESPA ROXA HIDRO UN MATRIZ</option>
+<option>ALFACE CRESPA ROXA ORG MATRIZ</option>
+<option>ALFACE CRESPA UN MATRIZ</option>
+<option>ALFACE LISA BABY ORG UN MATRIZ</option>
+<option>ALFACE LISA HIDRO UN MATRIZ</option>
+<option>ALFACE LISA ORG UN MATRIZ</option>
+<option>ALFACE LISA UN MATRIZ</option>
+<option>ALFACE MIMOSA HIDRO UN MATRIZ</option>
+<option>ALFACE MIMOSA ORG UN MATRIZ</option>
+<option>ALFACE ROMANA BABY ORG UN MATRIZ</option>
+<option>ALMEIRÃO UN MATRIZ</option>
+<option>BRÓCOLIS NINJA ORG MATRIZ</option>
+<option>BRÓCOLIS NINJA UN MATRIZ</option>
+<option>BRÓCOLIS RAMOSO UN MATRIZ</option>
+<option>CATALÔNIA ORG MATRIZ</option>
+<option>CATALÔNIA UN MATRIZ</option>
+<option>CEBOLINHA HIDRO UN MATRIZ</option>
+<option>CEBOLINHA ORG MATRIZ</option>
+<option>CEBOLINHA UN MATRIZ</option>
+<option>CHEIRO VERDE (SALSA) ORG MATRIZ</option>
+<option>COENTRO HIDRO UN MATRIZ</option>
+<option>COENTRO ORG UN MATRIZ</option>
+<option>COENTRO UN MATRIZ</option>
+<option>COUVE FLOR ORG MATRIZ</option>
+<option>COUVE FLOR UN MATRIZ</option>
+<option>COUVE KALE ORG UN MATRIZ</option>
+<option>COUVE MANTEIGA ORG UN MATRIZ</option>
+<option>COUVE MANTEIGA UN MATRIZ</option>
+<option>ESCAROLA ORG UN MATRIZ</option>
+<option>ESCAROLA UN MATRIZ</option>
+<option>ESPINAFRE ORG UN MATRIZ</option>
+<option>ESPINAFRE UN MATRIZ</option>
+<option>HORTELÃ ORG UN MATRIZ</option>
+<option>HORTELÃ UN MATRIZ</option>
+<option>LOURO UN MATRIZ</option>
+<option>MANJERICÃO ORG UN MATRIZ</option>
+<option>MANJERICÃO UN MATRIZ</option>
+<option>MILHO VERDE ORG KG MATRIZ</option>
+<option>MOSTARDA MATRIZ</option>
+<option>ORÉGANO UN MATRIZ</option>
+<option>RABANETE ORG MATRIZ</option>
+<option>RABANETE UN MATRIZ</option>
+<option>REPOLHO ROXO ORG UN MATRIZ</option>
+<option>REPOLHO VERDE KG MATRIZ</option>
+<option>REPOLHO VERDE ORG UN MATRIZ</option>
+<option>RÚCULA HIDRO UN MATRIZ</option>
+<option>RÚCULA ORG UN MATRIZ</option>
+<option>RÚCULA UN MATRIZ</option>
+<option>SALSA HIDRO UN MATRIZ</option>
+<option>SALSA ORG MATRIZ</option>
+<option>SALSA UN MATRIZ</option>
+<option>TOMILHO UN MATRIZ</option>
+</select></div>
+      <div class="field"><label>Qtd. da carga</label><input type="number" id="qual-carga" placeholder="Ex: 500"/></div>
+      <div class="field"><label>Qtd. avaliada</label><input type="number" id="qual-avaliada" placeholder="Ex: 100"/></div>
+      <div class="field"><label>Defeito 1</label><input type="text" id="qual-def1" placeholder="Ex: Folha amarelada"/></div>
+      <div class="field"><label>Defeito 2</label><input type="text" id="qual-def2" placeholder="Ex: Tamanho irregular"/></div>
+      <div class="field"><label>Reincidência</label>
+        <select id="qual-reincidencia">
+          <option value="">Sem reincidência</option>
+          <option value="suspensa1">Suspensa 1</option>
+          <option value="suspensa2">Suspensa 2</option>
+          <option value="suspensa3">Suspensa 3</option>
+          <option value="suspensa4">Suspensa 4</option>
+        </select>
+      </div>
+      <div class="field"><label>Bloqueio</label>
+        <select id="qual-bloqueio">
+          <option value="false">Não</option>
+          <option value="true">Sim — Bloqueado</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:1/-1;"><label>Observações</label><textarea id="qual-obs" placeholder="Detalhes adicionais..."></textarea></div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Arquivo 1 (foto, laudo, PDF)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border2);border-radius:var(--r-sm);cursor:pointer;background:var(--surface2);font-size:13px;color:var(--text2);" for="qual-file1">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="qual-file1-label">Escolher arquivo</span>
+          <input type="file" id="qual-file1" accept="application/pdf,image/*" style="display:none;" onchange="document.getElementById('qual-file1-label').textContent=this.files[0]?.name||'Escolher arquivo'"/>
+        </label>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Arquivo 2</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border2);border-radius:var(--r-sm);cursor:pointer;background:var(--surface2);font-size:13px;color:var(--text2);" for="qual-file2">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="qual-file2-label">Escolher arquivo</span>
+          <input type="file" id="qual-file2" accept="application/pdf,image/*" style="display:none;" onchange="document.getElementById('qual-file2-label').textContent=this.files[0]?.name||'Escolher arquivo'"/>
+        </label>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Arquivo 3</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border2);border-radius:var(--r-sm);cursor:pointer;background:var(--surface2);font-size:13px;color:var(--text2);" for="qual-file3">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="qual-file3-label">Escolher arquivo</span>
+          <input type="file" id="qual-file3" accept="application/pdf,image/*" style="display:none;" onchange="document.getElementById('qual-file3-label').textContent=this.files[0]?.name||'Escolher arquivo'"/>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-qualidade')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarQualidade()">Salvar notificação</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COTA -->
+<div class="modal-overlay hidden" id="modal-cota">
+  <div class="modal">
+    <div class="modal-title">Nova Cota</div>
+    <input type="hidden" id="cota-edit-id"/>
+    <div class="field"><label>Produtor *</label><select id="cota-produtor"><option value="">Selecione o produtor</option></select></div>
+    <div class="field"><label>Título *</label><input type="text" id="cota-titulo" placeholder="Ex: Cota Semana 15/2026"/></div>
+    <div class="field"><label>Período</label><input type="text" id="cota-periodo" placeholder="Ex: Abril/2026"/></div>
+    <div class="field"><label>Arquivo PDF (URL ou base64)</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px dashed var(--border2);border-radius:var(--r-sm);cursor:pointer;background:var(--surface2);font-size:13px;color:var(--text2);" for="cota-file">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span id="cota-file-label">Escolher PDF ou imagem</span>
+        <input type="file" id="cota-file" accept="application/pdf,image/*" style="display:none;" onchange="document.getElementById('cota-file-label').textContent=this.files[0]?.name||'Escolher PDF ou imagem'"/>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-cota')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarCota()">Salvar cota</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHES -->
+<div class="modal-overlay hidden" id="modal-detalhe">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-title" id="modal-detalhe-title">Detalhes</div>
+    <div id="modal-detalhe-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-green" style="width:100%;" onclick="closeModal('modal-detalhe')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR -->
+<div class="modal-overlay hidden" id="modal-confirm">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-title" id="confirm-title">Confirmar</div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.6;" id="confirm-msg"></p>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-confirm')">Cancelar</button>
+      <button class="btn btn-red" id="btn-confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPA_URL='https://ubpmtskgczzonpbhufel.supabase.co';
+const SUPA_KEY='sb_publishable_e2RmDINxjS_6WCVtAjdT8w_Q3Lg_2Yy';
+const db=supabase.createClient(SUPA_URL,SUPA_KEY);
+const ADMIN_USER='admin',ADMIN_PASS='caisp2026';
+let allProdutores=[],allPlantios=[],allNFs=[],allFichas=[],allQualidade=[],allCotas=[],charts={};
+
+function toast(msg,dur=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+
+function adminLogin(){
+  if(document.getElementById('adm-user').value.trim()===ADMIN_USER&&document.getElementById('adm-pass').value.trim()===ADMIN_PASS){
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('main-app').style.display='flex';
+    loadAll();
+  }else toast('Usuário ou senha incorretos.');
+}
+document.getElementById('adm-pass').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+function adminLogout(){document.getElementById('main-app').style.display='none';document.getElementById('login-screen').classList.remove('hidden');document.getElementById('adm-pass').value='';}
+
+const PAGES=['dashboard','colheitas','plantios','insumos','produtores','novo-produtor','fichas','qualidade','cotas','almoxarifado-adm','forecast-adm','talhoes-adm'];
+function showPage(p){
+  PAGES.forEach(pg=>{document.getElementById('page-'+pg).classList.toggle('active',pg===p);const si=document.getElementById('si-'+pg);if(si)si.classList.toggle('active',pg===p);});
+  if(p==='novo-produtor'){document.getElementById('form-prod-title').textContent='Novo Produtor';document.getElementById('edit-prod-id').value='';document.getElementById('btn-salvar-prod').textContent='Salvar produtor';['np-nome','np-usuario','np-senha','np-prop','np-area'].forEach(id=>document.getElementById(id).value='');}
+  if(p==='fichas')renderFichas();
+  if(p==='qualidade')renderQualidade();
+  if(p==='cotas')renderCotas();
+  if(p==='almoxarifado-adm')renderAlmoxarifado();
+  if(p==='forecast-adm')renderForecast();
+  if(p==='talhoes-adm')renderTalhoes();
+}
+function openModal(id){document.getElementById(id).classList.remove('hidden');}
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+
+async function loadAll(){
+  const[{data:prods},{data:plants},{data:nfs},{data:fichas},{data:qual},{data:cotas}]=await Promise.all([
+    db.from('produtores').select('*').order('nome'),
+    db.from('plantios').select('*,produtores(nome,propriedade)').order('data_plantio',{ascending:false}),
+    db.from('notas_fiscais').select('*,nota_itens(*),produtores(nome)').order('data_nota',{ascending:false}),
+    db.from('fichas_tecnicas').select('*,produtores(nome)').order('created_at',{ascending:false}),
+    db.from('qualidade_notificacoes').select('*,produtores(nome)').order('created_at',{ascending:false}),
+    db.from('cotas').select('*,produtores(nome)').order('created_at',{ascending:false})
+  ]);
+  allProdutores=prods||[];allPlantios=plants||[];allNFs=nfs||[];allFichas=fichas||[];allQualidade=qual||[];allCotas=cotas||[];
+  populateFiltros();
+  renderDashboard();renderProdutores(allProdutores);renderPlantios();renderColheitas();renderInsumos();renderFichas();renderQualidade();renderCotas();renderAlmoxarifado();
+  renderForecast();renderTalhoes();
+}
+
+function populateFiltros(){
+  const opts=allProdutores.map(p=>`<option value="${p.id}">${p.nome}</option>`).join('');
+  ['colh-prod','plant-prod','ins-prod','ficha-filter-prod','qual-filter-prod','cota-filter-prod','alm-filter-prod','fc-filter-prod','tal-filter-prod'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">Todos os produtores</option>'+opts;});
+  ['ficha-produtor','qual-produtor','cota-produtor'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">Selecione o produtor</option>'+opts;});
+  const meses=[...new Set(allPlantios.filter(p=>p.data_plantio).map(p=>p.data_plantio.slice(0,7)))].sort().reverse();
+  document.getElementById('plant-mes').innerHTML='<option value="">Todos os meses</option>'+meses.map(m=>`<option value="${m}">${new Date(m+'-01').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</option>`).join('');
+}
+
+function renderDashboard(){
+  const pl=allPlantios,pr=allProdutores;
+  const mes=new Date().getMonth(),ano=new Date().getFullYear();
+  const doMes=pl.filter(p=>{if(!p.data_plantio)return false;const d=new Date(p.data_plantio);return d.getMonth()===mes&&d.getFullYear()===ano;});
+  const totB=pl.reduce((s,p)=>s+(parseInt(p.bandejas)||0),0);
+  const totC=pl.reduce((s,p)=>s+((parseInt(p.bandejas)||0)*(parseInt(p.celulas_bandeja)||0)),0);
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric"><div class="metric-lbl">Produtores</div><div class="metric-val">${pr.length}</div><div class="metric-sub">cadastrados</div></div>
+    <div class="metric"><div class="metric-lbl">Plantios este mês</div><div class="metric-val" style="color:var(--green);">${doMes.length}</div><div class="metric-sub">de ${pl.length} total</div></div>
+    <div class="metric"><div class="metric-lbl">Bandejas totais</div><div class="metric-val">${totB.toLocaleString('pt-BR')}</div><div class="metric-sub">histórico</div></div>
+    <div class="metric"><div class="metric-lbl">Células totais</div><div class="metric-val">${totC>0?totC.toLocaleString('pt-BR'):'—'}</div><div class="metric-sub">histórico</div></div>
+  `;
+  const rows=pr.map(prod=>{
+    const pp=pl.filter(p=>p.produtor_id===prod.id);
+    const bp=pp.reduce((s,p)=>s+(parseInt(p.bandejas)||0),0);
+    const cp=pp.reduce((s,p)=>s+((parseInt(p.bandejas)||0)*(parseInt(p.celulas_bandeja)||0)),0);
+    const ul=pp[0];
+    return`<tr><td style="font-weight:500;">${prod.nome}</td><td>${prod.propriedade||'—'}</td><td>${pp.length}</td><td>${bp.toLocaleString('pt-BR')}</td><td>${cp>0?cp.toLocaleString('pt-BR'):'—'}</td><td>${ul&&ul.data_plantio?new Date(ul.data_plantio+'T12:00:00').toLocaleDateString('pt-BR'):'—'}</td></tr>`;
+  }).join('');
+  document.getElementById('dash-table').innerHTML=`<table><thead><tr><th>Produtor</th><th>Propriedade</th><th>Plantios</th><th>Bandejas</th><th>Células</th><th>Último plantio</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:2rem;">Sem dados.</td></tr>'}</tbody></table>`;
+  buildCharts();
+}
+
+function buildCharts(){
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};
+  const pl=allPlantios.filter(p=>p.data_plantio);
+  const ultMeses=[];for(let i=5;i>=0;i--){const d=new Date();d.setMonth(d.getMonth()-i);ultMeses.push(d.toISOString().slice(0,7));}
+  const labelsMes=ultMeses.map(m=>new Date(m+'-01').toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}));
+  const countMes=ultMeses.map(m=>pl.filter(p=>p.data_plantio.slice(0,7)===m).length);
+  charts.mes=new Chart(document.getElementById('chart-mes').getContext('2d'),{type:'bar',data:{labels:labelsMes,datasets:[{label:'Plantios',data:countMes,backgroundColor:'rgba(29,158,117,0.7)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+  const cultCount={};pl.forEach(p=>{if(p.cultura){const c=p.cultura.split(' ')[0];cultCount[c]=(cultCount[c]||0)+1;}});
+  const topCult=Object.entries(cultCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  charts.cult=new Chart(document.getElementById('chart-cult').getContext('2d'),{type:'doughnut',data:{labels:topCult.map(c=>c[0]),datasets:[{data:topCult.map(c=>c[1]),backgroundColor:['#1D9E75','#378ADD','#EF9F27','#E24B4A','#9F5FDB','#0F6E56','#185FA5','#BA7517']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
+  const bandMes=ultMeses.map(m=>pl.filter(p=>p.data_plantio.slice(0,7)===m).reduce((s,p)=>s+(parseInt(p.bandejas)||0),0));
+  const celMes=ultMeses.map(m=>pl.filter(p=>p.data_plantio.slice(0,7)===m).reduce((s,p)=>s+((parseInt(p.bandejas)||0)*(parseInt(p.celulas_bandeja)||0)),0));
+  charts.band=new Chart(document.getElementById('chart-band').getContext('2d'),{type:'line',data:{labels:labelsMes,datasets:[{label:'Bandejas',data:bandMes,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.1)',fill:true,tension:0.4},{label:'Células (÷100)',data:celMes.map(v=>Math.round(v/100)),borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.1)',fill:true,tension:0.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true}}}});
+}
+
+function renderColheitas(){
+  const filtProd=document.getElementById('colh-prod').value;
+  const hoje=new Date();
+  const lista=allPlantios.filter(p=>{if(!p.previsao_colheita)return false;if(filtProd&&p.produtor_id!==filtProd)return false;return Math.round((new Date(p.previsao_colheita+'T12:00:00')-hoje)/86400000)>=-7&&Math.round((new Date(p.previsao_colheita+'T12:00:00')-hoje)/86400000)<=60;}).sort((a,b)=>new Date(a.previsao_colheita)-new Date(b.previsao_colheita));
+  const atr=lista.filter(p=>Math.round((new Date(p.previsao_colheita+'T12:00:00')-hoje)/86400000)<0).length;
+  const prox=lista.filter(p=>{const d=Math.round((new Date(p.previsao_colheita+'T12:00:00')-hoje)/86400000);return d>=0&&d<=7;}).length;
+  const prog=lista.length-atr-prox;
+  document.getElementById('colh-metrics').innerHTML=`
+    <div class="metric"><div class="metric-lbl">Atrasadas</div><div class="metric-val" style="color:var(--red);">${atr}</div><div class="metric-sub">colheitas</div></div>
+    <div class="metric"><div class="metric-lbl">Próx. 7 dias</div><div class="metric-val" style="color:#BA7517;">${prox}</div><div class="metric-sub">colheitas</div></div>
+    <div class="metric"><div class="metric-lbl">Programadas</div><div class="metric-val" style="color:var(--green);">${prog}</div><div class="metric-sub">próx. 60 dias</div></div>
+  `;
+  if(!lista.length){document.getElementById('colh-area').innerHTML='<div class="empty">Nenhuma colheita prevista.</div>';return;}
+  const rows=lista.map(p=>{const dc=new Date(p.previsao_colheita+'T12:00:00'),diff=Math.round((dc-hoje)/86400000);let badge=diff<0?'badge-atrasado':diff<=7?'badge-prox':'badge-ok';let label=diff<0?`Atrasada ${Math.abs(diff)}d`:`Em ${diff}d`;return`<tr><td>${dc.toLocaleDateString('pt-BR')}</td><td style="font-weight:500;">${p.produtores?.nome||'—'}</td><td>${p.cultura||'—'}</td><td><span class="tag tag-green">${p.talhao||'—'}</span></td><td>${p.bandejas||'—'}</td><td>${p.celulas_bandeja&&p.bandejas?(p.celulas_bandeja*p.bandejas).toLocaleString('pt-BR'):'—'}</td><td><span class="badge ${badge}">${label}</span></td></tr>`;}).join('');
+  document.getElementById('colh-area').innerHTML=`<table><thead><tr><th>Data</th><th>Produtor</th><th>Cultura</th><th>Talhão</th><th>Bandejas</th><th>Total células</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderPlantios(){
+  const q=(document.getElementById('plant-q')?.value||'').toLowerCase();
+  const filtProd=document.getElementById('plant-prod')?.value||'';
+  const filtMes=document.getElementById('plant-mes')?.value||'';
+  const TC=['tag-green','tag-amber','tag-blue'];
+  const lista=allPlantios.filter(p=>{if(filtProd&&p.produtor_id!==filtProd)return false;if(filtMes&&(!p.data_plantio||!p.data_plantio.startsWith(filtMes)))return false;if(q&&![p.cultura,p.talhao,p.variedade,p.produtores?.nome].join(' ').toLowerCase().includes(q))return false;return true;});
+  const totB=lista.reduce((s,p)=>s+(parseInt(p.bandejas)||0),0);
+  const totC=lista.reduce((s,p)=>s+((parseInt(p.bandejas)||0)*(parseInt(p.celulas_bandeja)||0)),0);
+  document.getElementById('plant-count').textContent=`${lista.length} registro(s)`;
+  document.getElementById('plant-totais').innerHTML=`<div style="background:var(--green-l);border-radius:var(--r-sm);padding:8px 14px;font-size:13px;color:var(--green-d);font-weight:600;">Bandejas: ${totB.toLocaleString('pt-BR')}</div><div style="background:var(--blue-l);border-radius:var(--r-sm);padding:8px 14px;font-size:13px;color:#0C447C;font-weight:600;">Células: ${totC>0?totC.toLocaleString('pt-BR'):'—'}</div><div style="background:var(--surface2);border-radius:var(--r-sm);padding:8px 14px;font-size:13px;color:var(--text2);">Registros: ${lista.length}</div>`;
+  if(!lista.length){document.getElementById('plant-table').innerHTML='<div class="empty">Nenhum plantio.</div>';return;}
+  const rows=lista.map((p,i)=>`<tr><td>${p.data_plantio?new Date(p.data_plantio+'T12:00:00').toLocaleDateString('pt-BR'):'—'}</td><td style="font-weight:500;">${p.produtores?.nome||'—'}</td><td><span class="tag ${TC[i%3]}">${p.talhao||'—'}</span></td><td>${p.cultura||'—'}</td><td>${p.variedade||'—'}</td><td>${p.bandejas||'—'}</td><td>${p.celulas_bandeja||'—'}</td><td>${p.celulas_bandeja&&p.bandejas?(p.celulas_bandeja*p.bandejas).toLocaleString('pt-BR'):'—'}</td><td>${p.previsao_colheita?new Date(p.previsao_colheita+'T12:00:00').toLocaleDateString('pt-BR'):'—'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--text2);">${p.insumos||'—'}</td><td><div class="td-actions"><button class="btn btn-outline btn-sm" onclick="editPlantio('${p.id}')">Editar</button><button class="btn btn-red btn-sm" onclick="confirmDelete('plantio','${p.id}','${(p.cultura||'?').replace(/'/g,"\\'")}')">Excluir</button></div></td></tr>`).join('');
+  document.getElementById('plant-table').innerHTML=`<table><thead><tr><th>Data</th><th>Produtor</th><th>Talhão</th><th>Cultura</th><th>Variedade</th><th>Bandejas</th><th>Cél/band</th><th>Total cél</th><th>Prev. colheita</th><th>Insumos</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderInsumos(){
+  const filtProd=document.getElementById('ins-prod').value;
+  const lista=allPlantios.filter(p=>(!filtProd||p.produtor_id===filtProd)&&p.insumos);
+  const insCount={};lista.forEach(p=>{p.insumos.split(',').forEach(ins=>{const n=ins.trim().split('—')[0].split('–')[0].trim();if(n)insCount[n]=(insCount[n]||0)+1;});});
+  const sorted=Object.entries(insCount).sort((a,b)=>b[1]-a[1]);const max=sorted[0]?sorted[0][1]:1;
+  document.getElementById('ins-area').innerHTML=sorted.length?sorted.map(([n,c])=>`<div class="insumo-row"><div><div style="font-size:13px;font-weight:500;">${n}</div><div style="font-size:12px;color:var(--text2);">${c} uso(s)</div></div><div style="display:flex;align-items:center;gap:10px;"><div class="insumo-bar-wrap"><div class="insumo-bar" style="width:${Math.round(c/max*100)}%"></div></div><span style="font-size:12px;font-weight:600;color:var(--green);">${c}</span></div></div>`).join(''):'<div class="empty">Nenhum insumo.</div>';
+  // Notas fiscais
+  const nfFilt=allNFs.filter(nf=>!filtProd||nf.produtor_id===filtProd);
+  if(!nfFilt.length){document.getElementById('nf-adm-area').innerHTML='<div class="empty">Nenhuma nota fiscal registrada.</div>';return;}
+  const rows=nfFilt.map(nf=>`<tr><td>${nf.data_nota?new Date(nf.data_nota+'T12:00:00').toLocaleDateString('pt-BR'):'—'}</td><td style="font-weight:500;">${nf.produtores?.nome||'—'}</td><td>${nf.fornecedor||'—'}</td><td>${(nf.nota_itens||[]).length} item(ns)</td><td style="font-weight:600;color:var(--green);">R$ ${(nf.valor_total||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td></tr>`).join('');
+  document.getElementById('nf-adm-area').innerHTML=`<table><thead><tr><th>Data</th><th>Produtor</th><th>Fornecedor</th><th>Itens</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderProdutores(list){
+  document.getElementById('prod-count').textContent=`${list.length} produtor(es)`;
+  if(!list.length){document.getElementById('prod-table').innerHTML='<div class="empty">Nenhum produtor.</div>';return;}
+  const rows=list.map(p=>`<tr><td style="font-weight:500;">${p.nome}</td><td><code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;">${p.usuario}</code></td><td>${p.propriedade||'—'}</td><td>${p.area_ha?p.area_ha+' ha':'—'}</td><td><div class="td-actions"><button class="btn btn-outline btn-sm" onclick="editProdutor('${p.id}')">Editar</button><button class="btn btn-red btn-sm" onclick="confirmDelete('produtor','${p.id}','${p.nome.replace(/'/g,"\\'")}')">Excluir</button></div></td></tr>`).join('');
+  document.getElementById('prod-table').innerHTML=`<table><thead><tr><th>Nome</th><th>Usuário</th><th>Propriedade</th><th>Área</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function filterProd(q){renderProdutores(allProdutores.filter(p=>[p.nome,p.usuario,p.propriedade].join(' ').toLowerCase().includes(q.toLowerCase())));}
+function editProdutor(id){const p=allProdutores.find(x=>x.id===id);if(!p)return;document.getElementById('edit-prod-id').value=p.id;document.getElementById('np-nome').value=p.nome||'';document.getElementById('np-usuario').value=p.usuario||'';document.getElementById('np-senha').value=p.senha||'';document.getElementById('np-prop').value=p.propriedade||'';document.getElementById('np-area').value=p.area_ha||'';document.getElementById('form-prod-title').textContent='Editar Produtor';document.getElementById('btn-salvar-prod').textContent='Salvar alterações';showPage('novo-produtor');}
+async function salvarProdutor(){
+  const nome=document.getElementById('np-nome').value.trim(),usuario=document.getElementById('np-usuario').value.trim().toLowerCase(),senha=document.getElementById('np-senha').value.trim(),prop=document.getElementById('np-prop').value.trim(),area=document.getElementById('np-area').value,editId=document.getElementById('edit-prod-id').value;
+  if(!nome||!usuario||!senha){toast('Preencha nome, usuário e senha.');return;}
+  const btn=document.getElementById('btn-salvar-prod');btn.textContent='Salvando...';btn.disabled=true;
+  const{error}=editId?await db.from('produtores').update({nome,usuario,senha,propriedade:prop||null,area_ha:area?parseFloat(area):null}).eq('id',editId):await db.from('produtores').insert({nome,usuario,senha,propriedade:prop||null,area_ha:area?parseFloat(area):null});
+  btn.textContent=editId?'Salvar alterações':'Salvar produtor';btn.disabled=false;
+  if(error){toast('Erro: '+(error.message.includes('unique')?'Usuário já existe.':error.message));return;}
+  toast(editId?'Atualizado!':'Cadastrado!');await loadAll();showPage('produtores');
+}
+
+// FICHAS TÉCNICAS
+function renderFichas(){
+  const filtProd=document.getElementById('ficha-filter-prod').value;
+  const lista=allFichas.filter(f=>!filtProd||f.produtor_id===filtProd);
+  if(!lista.length){document.getElementById('fichas-adm-area').innerHTML='<div class="empty">Nenhuma ficha técnica cadastrada.</div>';return;}
+  const rows=lista.map(f=>`<tr>
+    <td style="font-weight:500;">${f.produtores?.nome||'—'}</td>
+    <td>${f.titulo||'—'}</td>
+    <td>${f.cultura||'—'}</td>
+    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--text2);">${f.conteudo||'—'}</td>
+    <td>${new Date(f.created_at).toLocaleDateString('pt-BR')}</td>
+    <td><div class="td-actions">
+      <button class="btn btn-outline btn-sm" onclick="verDetalhe('ficha','${f.id}')">Ver detalhes</button>
+      <button class="btn btn-red btn-sm" onclick="confirmDelete('ficha','${f.id}','${(f.titulo||'?').replace(/'/g,String.fromCharCode(39))}')">Excluir</button>
+    </div></td>
+  </tr>`).join('');
+  document.getElementById('fichas-adm-area').innerHTML=`<table><thead><tr><th>Produtor</th><th>Título</th><th>Cultura</th><th>Conteúdo</th><th>Data</th><th>Arquivo</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+async function salvarFicha(){
+  const produtor_id=document.getElementById('ficha-produtor').value;
+  const titulo=document.getElementById('ficha-titulo').value.trim();
+  const cultura=document.getElementById('ficha-cultura').value;
+  const conteudo=document.getElementById('ficha-conteudo').value.trim();
+  if(!produtor_id||!titulo||!conteudo){toast('Preencha produtor, título e conteúdo.');return;}
+  let arquivo_url=null;const ff=document.getElementById('ficha-file').files[0];
+  if(ff){arquivo_url=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(ff);});}
+  const{error}=await db.from('fichas_tecnicas').insert({produtor_id,titulo,cultura:cultura||null,conteudo,arquivo_url});
+  if(error){toast('Erro ao salvar.');return;}
+  toast('Ficha técnica enviada ao produtor!');closeModal('modal-ficha');
+  ['ficha-produtor','ficha-titulo','ficha-cultura','ficha-conteudo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ficha-file').value='';document.getElementById('ficha-file-label').textContent='Escolher PDF ou imagem';
+  await loadAll();
+}
+
+// QUALIDADE
+function renderQualidade(){
+  const filtProd=document.getElementById('qual-filter-prod').value;
+  const lista=allQualidade.filter(q=>!filtProd||q.produtor_id===filtProd);
+  if(!lista.length){document.getElementById('qual-adm-area').innerHTML='<div class="empty">Nenhuma notificação cadastrada.</div>';return;}
+  const rows=lista.map(q=>`<tr>
+    <td style="font-weight:500;">${q.produtores?.nome||'—'}</td>
+    <td>${q.cultura||'—'}</td>
+    <td>${q.quantidade_carga||'—'}</td>
+    <td>${q.quantidade_avaliada||'—'}</td>
+    <td style="font-size:12px;">${q.defeito1||'—'}</td>
+    <td style="font-size:12px;">${q.defeito2||'—'}</td>
+    <td>${q.reincidencia?`<span style="background:var(--amber-l);color:#854F0B;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;">${q.reincidencia.replace('suspensa','S')}</span>`:'—'}</td>
+    <td><span class="${q.bloqueio?'bloq-sim':'bloq-nao'}">${q.bloqueio?'Bloqueado':'Liberado'}</span></td>
+    <td><div class="td-actions">
+      <button class="btn btn-outline btn-sm" onclick="verDetalhe('qualidade','${q.id}')">Ver detalhes</button>
+      ${q.bloqueio?`<button class="btn btn-outline btn-sm" onclick="desbloquear('${q.id}')">Desbloquear</button>`:`<button class="btn btn-red btn-sm" onclick="bloquear('${q.id}')">Bloquear</button>`}
+      <button class="btn btn-red btn-sm" onclick="confirmDelete('qualidade','${q.id}','notificação')">Excluir</button>
+    </div></td>
+  </tr>`).join('');
+  document.getElementById('qual-adm-area').innerHTML=`<table><thead><tr><th>Produtor</th><th>Cultura</th><th>Qtd. carga</th><th>Qtd. aval.</th><th>Defeito 1</th><th>Defeito 2</th><th>Reinc.</th><th>Status</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+async function salvarQualidade(){
+  const produtor_id=document.getElementById('qual-produtor').value;
+  const cultura=document.getElementById('qual-cultura').value;
+  if(!produtor_id||!cultura){toast('Preencha produtor e cultura.');return;}
+  const payload={
+    produtor_id,cultura,
+    quantidade_carga:parseFloat(document.getElementById('qual-carga').value)||null,
+    quantidade_avaliada:parseFloat(document.getElementById('qual-avaliada').value)||null,
+    defeito1:document.getElementById('qual-def1').value.trim()||null,
+    defeito2:document.getElementById('qual-def2').value.trim()||null,
+    reincidencia:document.getElementById('qual-reincidencia').value||null,
+    bloqueio:document.getElementById('qual-bloqueio').value==='true',
+    observacoes:document.getElementById('qual-obs').value.trim()||null,
+  };
+  // Processar até 3 arquivos
+  async function toBase64(inp){const f=inp.files[0];if(!f)return null;return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(f);});}
+  const[arq1,arq2,arq3]=await Promise.all([toBase64(document.getElementById('qual-file1')),toBase64(document.getElementById('qual-file2')),toBase64(document.getElementById('qual-file3'))]);
+  payload.arquivo1_url=arq1;payload.arquivo2_url=arq2;payload.arquivo3_url=arq3;
+  const{error}=await db.from('qualidade_notificacoes').insert(payload);
+  if(error){toast('Erro ao salvar.');return;}
+  toast('Notificação enviada ao produtor!');closeModal('modal-qualidade');
+  ['qual-produtor','qual-cultura','qual-carga','qual-avaliada','qual-def1','qual-def2','qual-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('qual-reincidencia').value='';document.getElementById('qual-bloqueio').value='false';
+  ['qual-file1','qual-file2','qual-file3'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id+'-label').textContent='Escolher arquivo';});
+  await loadAll();
+}
+async function bloquear(id){const{error}=await db.from('qualidade_notificacoes').update({bloqueio:true}).eq('id',id);if(error){toast('Erro.');return;}toast('Produtor bloqueado.');await loadAll();}
+async function desbloquear(id){const{error}=await db.from('qualidade_notificacoes').update({bloqueio:false}).eq('id',id);if(error){toast('Erro.');return;}toast('Produtor desbloqueado.');await loadAll();}
+
+// COTAS
+function renderCotas(){
+  const filtProd=document.getElementById('cota-filter-prod').value;
+  const lista=allCotas.filter(c=>!filtProd||c.produtor_id===filtProd);
+  if(!lista.length){document.getElementById('cotas-adm-area').innerHTML='<div class="empty">Nenhuma cota cadastrada.</div>';return;}
+  const rows=lista.map(c=>`<tr>
+    <td style="font-weight:500;">${c.produtores?.nome||'—'}</td>
+    <td>${c.titulo||'—'}</td>
+    <td>${c.periodo||'—'}</td>
+    <td>${new Date(c.created_at).toLocaleDateString('pt-BR')}</td>
+    <td><div class="td-actions">
+      ${c.arquivo_url?`<button class="btn btn-outline btn-sm" onclick="verDetalhe('cota','${c.id}')">Ver arquivo</button>`:''}
+      <button class="btn btn-red btn-sm" onclick="confirmDelete('cota','${c.id}','${(c.titulo||'?').replace(/'/g,String.fromCharCode(39))}')">Excluir</button>
+    </div></td>
+  </tr>`).join('');
+  document.getElementById('cotas-adm-area').innerHTML=`<table><thead><tr><th>Produtor</th><th>Título</th><th>Período</th><th>Data</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+async function salvarCota(){
+  const produtor_id=document.getElementById('cota-produtor').value;
+  const titulo=document.getElementById('cota-titulo').value.trim();
+  const periodo=document.getElementById('cota-periodo').value.trim();
+  if(!produtor_id||!titulo){toast('Preencha produtor e título.');return;}
+  let arquivo_url=null;const file=document.getElementById('cota-file').files[0];
+  if(file){arquivo_url=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});}
+  const{error}=await db.from('cotas').insert({produtor_id,titulo,periodo:periodo||null,arquivo_url});
+  if(error){toast('Erro ao salvar.');return;}
+  toast('Cota enviada ao produtor!');closeModal('modal-cota');['cota-produtor','cota-titulo','cota-periodo'].forEach(id=>document.getElementById(id).value='');document.getElementById('cota-file').value='';document.getElementById('cota-file-label').textContent='Escolher PDF ou imagem';await loadAll();
+}
+
+// ALMOXARIFADO ADM
+function renderAlmoxarifado(){
+  const filtProd=document.getElementById('alm-filter-prod').value;
+  const lista=allNFs.filter(nf=>!filtProd||nf.produtor_id===filtProd);
+  const totalGeral=lista.reduce((s,nf)=>s+(nf.valor_total||0),0);
+  document.getElementById('alm-totais').innerHTML=`<div style="background:var(--green-l);border-radius:var(--r-sm);padding:8px 14px;font-size:13px;color:var(--green-d);font-weight:600;">Total gasto: R$ ${totalGeral.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div style="background:var(--surface2);border-radius:var(--r-sm);padding:8px 14px;font-size:13px;color:var(--text2);">Notas: ${lista.length}</div>`;
+  if(!lista.length){document.getElementById('alm-area').innerHTML='<div class="empty">Nenhuma nota fiscal.</div>';return;}
+  const rows=lista.map(nf=>`<tr>
+    <td>${nf.data_nota?new Date(nf.data_nota+'T12:00:00').toLocaleDateString('pt-BR'):'—'}</td>
+    <td style="font-weight:500;">${nf.produtores?.nome||'—'}</td>
+    <td>${nf.fornecedor||'—'}</td>
+    <td>${(nf.nota_itens||[]).map(i=>`${i.item||''} (${i.quantidade||0} ${i.unidade||''})`).join(', ')||'—'}</td>
+    <td style="font-weight:600;color:var(--green);">R$ ${(nf.valor_total||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+  </tr>`).join('');
+  document.getElementById('alm-area').innerHTML=`<table><thead><tr><th>Data</th><th>Produtor</th><th>Fornecedor</th><th>Itens</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// EDITAR PLANTIO
+function editPlantio(id){const p=allPlantios.find(x=>x.id===id);if(!p)return;document.getElementById('ep-id').value=p.id;document.getElementById('ep-talhao').value=p.talhao||'Talhão 1';document.getElementById('ep-cultura').value=p.cultura||'';document.getElementById('ep-variedade').value=p.variedade||'';document.getElementById('ep-bandejas').value=p.bandejas||'';document.getElementById('ep-celulas').value=p.celulas_bandeja||'';document.getElementById('ep-data').value=p.data_plantio||'';document.getElementById('ep-prev').value=p.previsao_colheita||'';document.getElementById('ep-insumos').value=p.insumos||'';openModal('modal-plantio');}
+async function salvarEdicaoPlantio(){const id=document.getElementById('ep-id').value;const{error}=await db.from('plantios').update({talhao:document.getElementById('ep-talhao').value,cultura:document.getElementById('ep-cultura').value.trim(),variedade:document.getElementById('ep-variedade').value.trim(),bandejas:parseInt(document.getElementById('ep-bandejas').value)||null,celulas_bandeja:parseInt(document.getElementById('ep-celulas').value)||null,data_plantio:document.getElementById('ep-data').value||null,previsao_colheita:document.getElementById('ep-prev').value||null,insumos:document.getElementById('ep-insumos').value.trim()||null}).eq('id',id);if(error){toast('Erro ao salvar.');return;}toast('Plantio atualizado!');closeModal('modal-plantio');await loadAll();}
+
+// EXCLUIR
+function confirmDelete(tipo,id,nome){
+  const labels={plantio:'Excluir plantio',produtor:'Excluir produtor',ficha:'Excluir ficha técnica',qualidade:'Excluir notificação',cota:'Excluir cota'};
+  const tabelas={plantio:'plantios',produtor:'produtores',ficha:'fichas_tecnicas',qualidade:'qualidade_notificacoes',cota:'cotas'};
+  document.getElementById('confirm-title').textContent=labels[tipo]||'Confirmar';
+  document.getElementById('confirm-msg').textContent=`Tem certeza que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`;
+  document.getElementById('btn-confirm-ok').onclick=async()=>{closeModal('modal-confirm');const{error}=await db.from(tabelas[tipo]).delete().eq('id',id);if(error){toast('Erro ao excluir.');return;}toast('Excluído com sucesso.');await loadAll();};
+  openModal('modal-confirm');
+}
+
+// EXPORTAR
+function exportCSV(){
+  const filtProd=document.getElementById('plant-prod').value,filtMes=document.getElementById('plant-mes').value;
+  const lista=allPlantios.filter(p=>(!filtProd||p.produtor_id===filtProd)&&(!filtMes||p.data_plantio?.startsWith(filtMes)));
+  if(!lista.length){toast('Nenhum dado.');return;}
+  const h=['Data','Produtor','Propriedade','Talhão','Cultura','Variedade','Bandejas','Cél/band','Total cél','Prev. colheita','Insumos'];
+  const rows=lista.map(p=>[p.data_plantio?new Date(p.data_plantio+'T12:00:00').toLocaleDateString('pt-BR'):'',p.produtores?.nome||'',p.produtores?.propriedade||'',p.talhao||'',p.cultura||'',p.variedade||'',p.bandejas||'',p.celulas_bandeja||'',p.celulas_bandeja&&p.bandejas?p.celulas_bandeja*p.bandejas:'',p.previsao_colheita?new Date(p.previsao_colheita+'T12:00:00').toLocaleDateString('pt-BR'):'',(p.insumos||'').replace(/,/g,';')]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));a.download='plantios-caisp.csv';a.click();toast('CSV exportado!');
+}
+function exportColheitasCSV(){
+  const filtProd=document.getElementById('colh-prod').value;const hoje=new Date();
+  const lista=allPlantios.filter(p=>{if(!p.previsao_colheita)return false;if(filtProd&&p.produtor_id!==filtProd)return false;return Math.round((new Date(p.previsao_colheita+'T12:00:00')-hoje)/86400000)>=-7;}).sort((a,b)=>new Date(a.previsao_colheita)-new Date(b.previsao_colheita));
+  if(!lista.length){toast('Nenhum dado.');return;}
+  const h=['Prev. colheita','Produtor','Cultura','Talhão','Bandejas','Total células','Status'];
+  const rows=lista.map(p=>{const diff=Math.round((new Date(p.previsao_colheita+'T12:00:00')-hoje)/86400000);return[new Date(p.previsao_colheita+'T12:00:00').toLocaleDateString('pt-BR'),p.produtores?.nome||'',p.cultura||'',p.talhao||'',p.bandejas||'',p.celulas_bandeja&&p.bandejas?p.celulas_bandeja*p.bandejas:'',diff<0?`Atrasada ${Math.abs(diff)}d`:`Em ${diff}d`];});
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));a.download='colheitas-caisp.csv';a.click();toast('CSV exportado!');
+}
+
+// FORECAST
+let allForecast=[],allTalhoes=[];
+
+async function renderForecast(){
+  if(!allForecast.length){
+    const{data}=await db.from('forecast').select('*,produtores(nome,propriedade)').order('created_at',{ascending:false});
+    allForecast=data||[];
+    const semanas=[...new Set(allForecast.map(f=>f.semana).filter(Boolean))];
+    const sel=document.getElementById('fc-filter-semana');
+    if(sel)sel.innerHTML='<option value="">Todas as semanas</option>'+semanas.map(s=>`<option value="${s}">${s}</option>`).join('');
+  }
+  const filtProd=document.getElementById('fc-filter-prod')?.value||'';
+  const filtSem=document.getElementById('fc-filter-semana')?.value||'';
+  let lista=allForecast.filter(f=>(!filtProd||f.produtor_id===filtProd)&&(!filtSem||f.semana===filtSem));
+
+  // Métricas
+  const totalProd=new Set(lista.map(f=>f.produtor_id)).size;
+  const totalItems=lista.length;
+  const semanas=new Set(lista.map(f=>f.semana)).size;
+  document.getElementById('fc-metrics').innerHTML=`
+    <div class="metric"><div class="metric-lbl">Produtores com forecast</div><div class="metric-val" style="color:var(--green);">${totalProd}</div><div class="metric-sub">de ${allProdutores.length} total</div></div>
+    <div class="metric"><div class="metric-lbl">Registros</div><div class="metric-val">${totalItems}</div><div class="metric-sub">previsões</div></div>
+    <div class="metric"><div class="metric-lbl">Semanas</div><div class="metric-val">${semanas}</div><div class="metric-sub">com dados</div></div>
+  `;
+
+  if(!lista.length){document.getElementById('fc-area').innerHTML='<div class="empty">Nenhuma previsão registrada.</div>';return;}
+  const rows=lista.map(f=>`<tr>
+    <td style="font-weight:500;">${f.produtores?.nome||'—'}</td>
+    <td>${f.semana||'—'}</td>
+    <td>${f.cultura||'—'}</td>
+    <td><span class="tag tag-green">${f.talhao||'—'}</span></td>
+    <td style="font-weight:600;color:var(--green);">${(f.quantidade_prevista||0).toLocaleString('pt-BR')} ${f.unidade||''}</td>
+    <td style="font-size:12px;color:var(--text2);">${f.observacoes||'—'}</td>
+    <td>${new Date(f.created_at).toLocaleDateString('pt-BR')}</td>
+  </tr>`).join('');
+  document.getElementById('fc-area').innerHTML=`<table><thead><tr><th>Produtor</th><th>Semana</th><th>Cultura</th><th>Talhão</th><th>Qtd. prevista</th><th>Observações</th><th>Registrado</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function exportForecastCSV(){
+  if(!allForecast.length){toast('Nenhum dado.');return;}
+  const h=['Produtor','Semana','Cultura','Talhão','Qtd. prevista','Unidade','Observações','Data'];
+  const rows=allForecast.map(f=>[f.produtores?.nome||'',f.semana||'',f.cultura||'',f.talhao||'',f.quantidade_prevista||'',f.unidade||'',(f.observacoes||'').replace(/,/g,';'),new Date(f.created_at).toLocaleDateString('pt-BR')]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('
+');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));a.download='forecast-caisp.csv';a.click();toast('CSV exportado!');
+}
+
+// TALHÕES ADM
+async function renderTalhoes(){
+  if(!allTalhoes.length){
+    const{data}=await db.from('talhoes').select('*,produtores(nome)').order('nome');
+    allTalhoes=data||[];
+  }
+  const filtProd=document.getElementById('tal-filter-prod')?.value||'';
+  const lista=allTalhoes.filter(t=>!filtProd||t.produtor_id===filtProd);
+  if(!lista.length){document.getElementById('tal-area').innerHTML='<div class="empty">Nenhum talhão cadastrado pelos produtores ainda.</div>';return;}
+  const rows=lista.map(t=>`<tr>
+    <td style="font-weight:500;">${t.produtores?.nome||'—'}</td>
+    <td><span style="background:var(--green-l);color:var(--green-d);font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;">${t.nome}</span></td>
+    <td>${t.ordem||'—'}</td>
+    <td>${new Date(t.created_at).toLocaleDateString('pt-BR')}</td>
+  </tr>`).join('');
+  document.getElementById('tal-area').innerHTML=`<table><thead><tr><th>Produtor</th><th>Talhão</th><th>Ordem</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+
+// VER DETALHES
+async function verDetalhe(tipo, id){
+  let data=null;
+  if(tipo==='ficha'){const r=await db.from('fichas_tecnicas').select('*,produtores(nome)').eq('id',id).single();data=r.data;}
+  else if(tipo==='qualidade'){const r=await db.from('qualidade_notificacoes').select('*,produtores(nome)').eq('id',id).single();data=r.data;}
+  else if(tipo==='cota'){const r=await db.from('cotas').select('*,produtores(nome)').eq('id',id).single();data=r.data;}
+  if(!data){toast('Erro ao carregar.');return;}
+
+  let html='';
+  if(tipo==='ficha'){
+    html=`<div style="display:flex;flex-direction:column;gap:12px;">
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Produtor</div><div style="font-size:14px;font-weight:600;">${data.produtores?.nome||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Título</div><div style="font-size:14px;font-weight:600;">${data.titulo||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Cultura</div><div style="font-size:13px;">${data.cultura||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Conteúdo</div><div style="font-size:13px;line-height:1.7;color:var(--text2);background:var(--surface2);padding:12px;border-radius:8px;margin-top:4px;">${data.conteudo||'—'}</div></div>
+      ${data.arquivo_url?`<div><div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:8px;">Arquivo anexo</div><button onclick="abrirArqAdm('${data.arquivo_url}')" style="background:var(--blue-l);border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;color:#0C447C;cursor:pointer;font-family:'DM Sans',sans-serif;">Abrir / Baixar arquivo</button></div>`:''}
+    </div>`;
+  } else if(tipo==='qualidade'){
+    const arqs=[data.arquivo1_url,data.arquivo2_url,data.arquivo3_url].filter(Boolean);
+    html=`<div style="display:flex;flex-direction:column;gap:12px;">
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Produtor</div><div style="font-size:14px;font-weight:600;">${data.produtores?.nome||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Cultura</div><div style="font-size:14px;font-weight:600;">${data.cultura||'—'}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><div style="font-size:11px;color:var(--text2);">Qtd. carga</div><div style="font-size:13px;font-weight:500;">${data.quantidade_carga||'—'}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);">Qtd. avaliada</div><div style="font-size:13px;font-weight:500;">${data.quantidade_avaliada||'—'}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);">Defeito 1</div><div style="font-size:13px;font-weight:500;">${data.defeito1||'—'}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);">Defeito 2</div><div style="font-size:13px;font-weight:500;">${data.defeito2||'—'}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);">Reincidência</div><div style="font-size:13px;font-weight:500;">${data.reincidencia?data.reincidencia.replace('suspensa','Suspensa '):'—'}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);">Bloqueio</div><div><span style="font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;${data.bloqueio?'background:var(--red-l);color:var(--red)':'background:var(--green-l);color:var(--green-d)'}">${data.bloqueio?'Bloqueado':'Liberado'}</span></div></div>
+      </div>
+      ${data.observacoes?`<div><div style="font-size:11px;color:var(--text2);font-weight:500;">Observações</div><div style="font-size:13px;line-height:1.7;color:var(--text2);background:var(--surface2);padding:12px;border-radius:8px;margin-top:4px;">${data.observacoes}</div></div>`:''}
+      ${arqs.length?`<div><div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:8px;">Arquivos (${arqs.length})</div><div style="display:flex;gap:8px;flex-wrap:wrap;">${arqs.map((arq,i)=>`<button onclick="abrirArqAdm('${arq}')" style="background:var(--amber-l);border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;color:#854F0B;cursor:pointer;font-family:'DM Sans',sans-serif;">Arquivo ${i+1}</button>`).join('')}</div></div>`:''}
+    </div>`;
+  } else if(tipo==='cota'){
+    html=`<div style="display:flex;flex-direction:column;gap:12px;">
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Produtor</div><div style="font-size:14px;font-weight:600;">${data.produtores?.nome||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Título</div><div style="font-size:14px;font-weight:600;">${data.titulo||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Período</div><div style="font-size:13px;">${data.periodo||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2);font-weight:500;">Data de envio</div><div style="font-size:13px;">${new Date(data.created_at).toLocaleDateString('pt-BR')}</div></div>
+      ${data.arquivo_url?`<div><div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:8px;">Arquivo</div><button onclick="abrirArqAdm('${data.arquivo_url}')" style="background:var(--red-l);border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;">Abrir / Baixar PDF</button></div>`:'<div style="font-size:13px;color:var(--text3);">Sem arquivo anexo.</div>'}
+    </div>`;
+  }
+
+  document.getElementById('modal-detalhe-title').textContent={ficha:'Ficha Técnica',qualidade:'Notificação de Qualidade',cota:'Cota'}[tipo];
+  document.getElementById('modal-detalhe-body').innerHTML=html;
+  openModal('modal-detalhe');
+}
+
+function abrirArqAdm(url){
+  if(!url){toast('Arquivo não disponível.');return;}
+  const win=window.open();
+  if(url.startsWith('data:application/pdf')){
+    win.document.write('<iframe src="'+url+'" style="width:100%;height:100vh;border:none;"></iframe>');
+  } else {
+    win.document.write('<div style="text-align:center;padding:1rem;font-family:sans-serif;"><img src="'+url+'" style="max-width:100%;display:block;margin:0 auto;" /><br><a href="'+url+'" download="arquivo" style="display:inline-block;padding:10px 20px;background:#1D9E75;color:white;border-radius:8px;text-decoration:none;font-weight:600;">Baixar arquivo</a></div>');
+  }
+}
+</script>
+</body>
+</html>
