@@ -1,0 +1,29 @@
+{
+  "name": "Caderno de Campo CAISP",
+  "short_name": "CAISP Campo",
+  "description": "Caderno de campo digital para produtores horticolas da CAISP",
+  "start_url": "/caderno-campo-caisp.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F4F6F3",
+  "theme_color": "#1D9E75",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "categories": [
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
