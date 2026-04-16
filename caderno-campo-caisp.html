@@ -130,6 +130,21 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .susp-badge{background:var(--amber-l);color:#854F0B;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
 /* COTAS */
 .cota-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:1rem;display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;}
+.lote-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
+.lote-head{padding:12px 1rem;display:flex;align-items:flex-start;justify-content:space-between;background:var(--green-l);}
+.lote-nome{font-size:14px;font-weight:600;color:var(--green-d);}
+.lote-sub{font-size:11px;color:var(--green-d);opacity:0.8;margin-top:2px;}
+.lote-saldo{text-align:right;}
+.lote-saldo-val{font-size:18px;font-weight:600;color:var(--green-d);}
+.lote-saldo-lbl{font-size:10px;color:var(--green-d);opacity:0.8;}
+.lote-body{padding:10px 1rem;}
+.venda-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.venda-row:last-child{border-bottom:none;}
+.venda-info{flex:1;}
+.venda-qtd{font-size:13px;font-weight:500;}
+.venda-det{font-size:11px;color:var(--text2);}
+.venda-val{font-size:13px;font-weight:600;color:var(--green-d);}
+.rendimento-box{padding:10px 1rem;background:var(--amber-l);border-top:1px solid rgba(239,159,39,0.3);display:flex;justify-content:space-between;align-items:center;}
 .cota-icon{width:44px;height:44px;background:var(--red-l);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cota-icon svg{width:22px;height:22px;stroke:var(--red);fill:none;stroke-width:1.8;}
 .cota-titulo{font-size:14px;font-weight:600;}
@@ -170,7 +185,12 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <div class="avatar" id="av">JS</div>
       <div><div class="topbar-name" id="tn">...</div><div class="topbar-prop" id="tp">CAISP</div></div>
     </div>
-    <button class="topbar-logout" onclick="doLogout()">Sair</button>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button onclick="switchTab('config')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;display:flex;align-items:center;" title="Configurações">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--text2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="topbar-logout" onclick="doLogout()">Sair</button>
+    </div>
   </div>
 
   <!-- INÍCIO -->
@@ -198,9 +218,16 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <div><label>Cultura *</label><select id="f-cultura" onchange="calcPrevisao()"><option value="">Selecione a cultura</option><option>ACELGA ORG UN MATRIZ</option><option>ACELGA UN MATRIZ</option><option>AGRIÃO HIDRO UN MATRIZ</option><option>AGRIÃO ORG UN MATRIZ</option><option>AGRIÃO UN MATRIZ</option><option>ALECRIM UN MATRIZ</option><option>ALFACE AMERICANA BOLA UN MATRIZ</option><option>ALFACE BICOLOR HIDRO UN MATRIZ</option><option>ALFACE CRESPA HIDRO UN MATRIZ</option><option>ALFACE CRESPA ORG UN MATRIZ</option><option>ALFACE CRESPA ROXA HIDRO UN MATRIZ</option><option>ALFACE CRESPA ROXA ORG MATRIZ</option><option>ALFACE CRESPA UN MATRIZ</option><option>ALFACE LISA BABY ORG UN MATRIZ</option><option>ALFACE LISA HIDRO UN MATRIZ</option><option>ALFACE LISA ORG UN MATRIZ</option><option>ALFACE LISA UN MATRIZ</option><option>ALFACE MIMOSA HIDRO UN MATRIZ</option><option>ALFACE MIMOSA ORG UN MATRIZ</option><option>ALFACE ROMANA BABY ORG UN MATRIZ</option><option>ALMEIRÃO UN MATRIZ</option><option>BRÓCOLIS NINJA ORG MATRIZ</option><option>BRÓCOLIS NINJA UN MATRIZ</option><option>BRÓCOLIS RAMOSO UN MATRIZ</option><option>CATALÔNIA ORG MATRIZ</option><option>CATALÔNIA UN MATRIZ</option><option>CEBOLINHA HIDRO MATRIZ</option><option>CEBOLINHA ORG MATRIZ</option><option>CEBOLINHA UN MATRIZ</option><option>CHEIRO VERDE (SALSA) ORG MATRIZ</option><option>COENTRO HIDRO UN MATRIZ</option><option>COENTRO ORG UN MATRIZ</option><option>COENTRO UN MATRIZ</option><option>COUVE FLOR ORG MATRIZ</option><option>COUVE FLOR UN MATRIZ</option><option>COUVE KALE ORG UN MATRIZ</option><option>COUVE MANTEIGA ORG UN MATRIZ</option><option>COUVE MANTEIGA UN MATRIZ</option><option>ESCAROLA ORG UN MATRIZ</option><option>ESCAROLA UN MATRIZ</option><option>ESPINAFRE ORG UN MATRIZ</option><option>ESPINAFRE UN MATRIZ</option><option>HORTELÃ ORG UN MATRIZ</option><option>HORTELÃ UN MATRIZ</option><option>LOURO UN MATRIZ</option><option>MANJERICÃO ORG UN MATRIZ</option><option>MANJERICÃO UN MATRIZ</option><option>MILHO VERDE ORG KG MATRIZ</option><option>MOSTARDA MATRIZ</option><option>ORÉGANO UN MATRIZ</option><option>RABANETE ORG MATRIZ</option><option>RABANETE UN MATRIZ</option><option>REPOLHO ROXO ORG UN MATRIZ</option><option>REPOLHO VERDE KG MATRIZ</option><option>REPOLHO VERDE ORG UN MATRIZ</option><option>RÚCULA HIDRO UN MATRIZ</option><option>RÚCULA ORG UN MATRIZ</option><option>RÚCULA UN MATRIZ</option><option>SALSA HIDRO UN MATRIZ</option><option>SALSA ORG MATRIZ</option><option>SALSA UN MATRIZ</option><option>TOMILHO UN MATRIZ</option><option>TORU</option></select></div>
       <div><label>Variedade</label><input type="text" id="f-variedade" placeholder="Ex: Vanda, Geórgia..."/></div>
       <div><label>Qtd. bandejas *</label><input type="number" id="f-bandejas" placeholder="Ex: 80" min="1" oninput="calcCelulas()"/></div>
-      <div><label>Células por bandeja</label><select id="f-celulas" onchange="calcCelulas()"><option value="">Selecione</option><option value="72">72 células</option><option value="128">128 células</option><option value="200">200 células</option><option value="288">288 células</option><option value="392">392 células</option></select></div>
+      <div><label>Células por bandeja *</label><select id="f-celulas" onchange="calcCelulas()"><option value="">Selecione</option><option value="72">72 células</option><option value="128">128 células</option><option value="200">200 células</option><option value="288">288 células</option><option value="392">392 células</option></select></div>
       <div id="f-total-box" style="display:none;"><label>Total de células</label><div class="total-box" id="f-total-celulas"></div></div>
       <div><label>Data do plantio *</label><input type="date" id="f-data" onchange="calcPrevisao()"/></div>
+      <div id="f-dias-box" style="display:none;">
+        <label>Dias estimados até colheita <span style="font-size:11px;color:var(--text3);font-weight:400;">(edite se necessário)</span></label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="f-dias-colheita" min="1" max="365" style="width:100px;" oninput="calcPrevisaoManual()"/>
+          <span style="font-size:12px;color:var(--text2);">dias após o plantio</span>
+        </div>
+      </div>
       <div id="f-previsao-box" style="display:none;">
         <label style="display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#BA7517;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Previsão de colheita <span style="font-size:11px;color:var(--text3);font-weight:400;">(edite se necessário)</span></label>
         <input type="date" id="f-previsao-data" style="width:100%;padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border-radius:var(--r-sm);border:1px solid rgba(239,159,39,0.5);background:#FFFBF2;color:var(--text);outline:none;" onchange="atualizarSubPrevisao()"/>
@@ -327,9 +354,64 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     <div id="cotas-area"><div class="loading"><div class="spinner"></div></div></div>
   </div>
 
+  <!-- VENDAS -->
+  <div id="tab-vendas" class="content hidden">
+    <div class="form-title">Vendas</div>
+
+    <!-- CRIAR LOTE -->
+    <div class="sec-title">Criar novo lote de colheita</div>
+    <div class="form-card">
+      <div><label>Talhão *</label><select id="v-talhao" onchange="preencherLote()"><option value="">Selecione o talhão</option></select></div>
+      <div><label>Cultura *</label><select id="v-cultura" onchange="preencherLote()">
+        <option value="">Selecione a cultura</option>
+        <option>ACELGA ORG UN MATRIZ</option><option>ACELGA UN MATRIZ</option><option>AGRIÃO HIDRO UN MATRIZ</option><option>AGRIÃO ORG UN MATRIZ</option><option>AGRIÃO UN MATRIZ</option><option>ALECRIM UN MATRIZ</option><option>ALFACE AMERICANA BOLA UN MATRIZ</option><option>ALFACE BICOLOR HIDRO UN MATRIZ</option><option>ALFACE CRESPA HIDRO UN MATRIZ</option><option>ALFACE CRESPA ORG UN MATRIZ</option><option>ALFACE CRESPA ROXA HIDRO UN MATRIZ</option><option>ALFACE CRESPA ROXA ORG MATRIZ</option><option>ALFACE CRESPA UN MATRIZ</option><option>ALFACE LISA BABY ORG UN MATRIZ</option><option>ALFACE LISA HIDRO UN MATRIZ</option><option>ALFACE LISA ORG UN MATRIZ</option><option>ALFACE LISA UN MATRIZ</option><option>ALFACE MIMOSA HIDRO UN MATRIZ</option><option>ALFACE MIMOSA ORG UN MATRIZ</option><option>ALFACE ROMANA BABY ORG UN MATRIZ</option><option>ALMEIRÃO UN MATRIZ</option><option>BRÓCOLIS NINJA ORG MATRIZ</option><option>BRÓCOLIS NINJA UN MATRIZ</option><option>BRÓCOLIS RAMOSO UN MATRIZ</option><option>CATALÔNIA ORG MATRIZ</option><option>CATALÔNIA UN MATRIZ</option><option>CEBOLINHA HIDRO UN MATRIZ</option><option>CEBOLINHA ORG MATRIZ</option><option>CEBOLINHA UN MATRIZ</option><option>CHEIRO VERDE (SALSA) ORG MATRIZ</option><option>COENTRO HIDRO UN MATRIZ</option><option>COENTRO ORG UN MATRIZ</option><option>COENTRO UN MATRIZ</option><option>COUVE FLOR ORG MATRIZ</option><option>COUVE FLOR UN MATRIZ</option><option>COUVE KALE ORG UN MATRIZ</option><option>COUVE MANTEIGA ORG UN MATRIZ</option><option>COUVE MANTEIGA UN MATRIZ</option><option>ESCAROLA ORG UN MATRIZ</option><option>ESCAROLA UN MATRIZ</option><option>ESPINAFRE ORG UN MATRIZ</option><option>ESPINAFRE UN MATRIZ</option><option>HORTELÃ ORG UN MATRIZ</option><option>HORTELÃ UN MATRIZ</option><option>LOURO UN MATRIZ</option><option>MANJERICÃO ORG UN MATRIZ</option><option>MANJERICÃO UN MATRIZ</option><option>MILHO VERDE ORG KG MATRIZ</option><option>MOSTARDA MATRIZ</option><option>ORÉGANO UN MATRIZ</option><option>RABANETE ORG MATRIZ</option><option>RABANETE UN MATRIZ</option><option>REPOLHO ROXO ORG UN MATRIZ</option><option>REPOLHO VERDE KG MATRIZ</option><option>REPOLHO VERDE ORG UN MATRIZ</option><option>RÚCULA HIDRO UN MATRIZ</option><option>RÚCULA ORG UN MATRIZ</option><option>RÚCULA UN MATRIZ</option><option>SALSA HIDRO UN MATRIZ</option><option>SALSA ORG MATRIZ</option><option>SALSA UN MATRIZ</option><option>TOMILHO UN MATRIZ</option><option>TORU</option>
+      </select></div>
+      <div><label>Data da colheita *</label><input type="date" id="v-data-colheita" onchange="preencherLote()"/></div>
+      <div><label>Nº da colheita</label><input type="number" id="v-num-colheita" value="1" min="1" placeholder="Ex: 1" oninput="preencherLote()"/></div>
+      <div><label>Quantidade colhida *</label><input type="number" id="v-qtd-colhida" placeholder="Ex: 200" min="1"/></div>
+      <div><label>Unidade</label>
+        <select id="v-unidade">
+          <option value="caixas">Caixas</option>
+          <option value="kg">Kg</option>
+          <option value="unidades">Unidades</option>
+          <option value="maços">Maços</option>
+        </select>
+      </div>
+      <div id="v-lote-nome-box" style="display:none;">
+        <label>Nome do lote (gerado automaticamente)</label>
+        <div style="padding:10px 12px;background:var(--green-l);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--green-d);" id="v-lote-nome"></div>
+      </div>
+      <button class="btn-green" onclick="criarLote()">Criar lote</button>
+    </div>
+
+    <!-- REGISTRAR VENDA -->
+    <div class="sec-title">Registrar venda</div>
+    <div class="form-card">
+      <div><label>Lote *</label><select id="v-lote-sel" onchange="selecionarLote()"><option value="">Selecione o lote</option></select></div>
+      <div id="v-saldo-atual" style="display:none;">
+        <label>Saldo disponível no lote</label>
+        <div style="padding:10px 12px;background:var(--blue-l);border-radius:var(--r-sm);font-size:15px;font-weight:600;color:#0C447C;" id="v-saldo-txt"></div>
+      </div>
+      <div><label>Data da venda *</label><input type="date" id="v-data-venda"/></div>
+      <div><label>Quantidade vendida *</label><input type="number" id="v-qtd-venda" placeholder="Ex: 50" min="1" oninput="calcValorTotal()"/></div>
+      <div><label>Preço unitário (R$)</label><input type="number" id="v-preco-unit" placeholder="Ex: 8.50" step="0.01" min="0" oninput="calcValorTotal()"/></div>
+      <div id="v-valor-total-box" style="display:none;">
+        <label>Valor total</label>
+        <div class="total-box" id="v-valor-total"></div>
+      </div>
+      <div><label>Comprador</label><input type="text" id="v-comprador" placeholder="Ex: CEAGESP, Mercado Central..."/></div>
+      <div><label>Observações</label><textarea id="v-obs-venda" placeholder="Anotações..."></textarea></div>
+      <button class="btn-green" onclick="registrarVenda()">Registrar venda</button>
+    </div>
+
+    <!-- LOTES E SALDOS -->
+    <div class="sec-title">Meus lotes</div>
+    <div id="lotes-area"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+
   <!-- FORECAST -->
   <div id="tab-forecast" class="content hidden">
-    <div class="form-title">Forecast Semanal</div>
+    <div class="form-title">Programação Semanal</div>
     <div style="font-size:13px;color:var(--text2);margin-bottom:1rem;">Informe sua previsão de colheita para as próximas semanas.</div>
 
     <div class="form-card">
@@ -369,6 +451,83 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     <div id="forecast-historico"><div class="loading"><div class="spinner"></div></div></div>
   </div>
 
+  <!-- CONFIGURAÇÕES -->
+  <div id="tab-config" class="content hidden">
+    <div class="form-title">Configurações</div>
+
+    <!-- PERFIL -->
+    <div>
+      <div class="sec-title">Meu perfil</div>
+      <div class="card" style="padding:1rem;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:1rem;">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--green);color:white;font-size:20px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="cfg-avatar"></div>
+          <div>
+            <div style="font-size:16px;font-weight:600;color:var(--text);" id="cfg-nome-display"></div>
+            <div style="font-size:12px;color:var(--text2);" id="cfg-prop-display"></div>
+            <div style="font-size:12px;color:var(--text3);" id="cfg-user-display"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div>
+      <div class="sec-title">Email para recuperação de senha</div>
+      <div class="form-card">
+        <div>
+          <label>Email atual</label>
+          <div style="padding:10px 12px;background:var(--surface2);border-radius:var(--r-sm);font-size:13px;color:var(--text2);" id="cfg-email-atual">Nenhum email cadastrado</div>
+        </div>
+        <div>
+          <label>Novo email</label>
+          <input type="email" id="cfg-email" placeholder="seu@email.com" autocomplete="email"/>
+        </div>
+        <button class="btn-green" onclick="salvarEmail()">Salvar email</button>
+      </div>
+    </div>
+
+    <!-- ALTERAR SENHA -->
+    <div>
+      <div class="sec-title">Alterar senha</div>
+      <div class="form-card">
+        <div>
+          <label>Senha atual *</label>
+          <input type="password" id="cfg-senha-atual" placeholder="Digite sua senha atual"/>
+        </div>
+        <div>
+          <label>Nova senha *</label>
+          <input type="password" id="cfg-senha-nova" placeholder="Mínimo 6 caracteres"/>
+        </div>
+        <div>
+          <label>Confirmar nova senha *</label>
+          <input type="password" id="cfg-senha-conf" placeholder="Repita a nova senha"/>
+        </div>
+        <button class="btn-green" onclick="alterarSenha()">Alterar senha</button>
+      </div>
+    </div>
+
+    <!-- RECUPERAR SENHA -->
+    <div>
+      <div class="sec-title">Esqueci minha senha</div>
+      <div class="card" style="padding:1rem;">
+        <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px;">Se você tem um email cadastrado, pode solicitar a redefinição de senha. Um código será enviado para o seu email.</p>
+        <div id="cfg-email-rec-area">
+          <input type="email" id="cfg-email-rec" placeholder="seu@email.com" style="width:100%;padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);outline:none;margin-bottom:10px;"/>
+          <button class="btn-green" onclick="solicitarRedefinicao()">Enviar código por email</button>
+        </div>
+        <div id="cfg-codigo-area" style="display:none;">
+          <input type="text" id="cfg-codigo" placeholder="Digite o código recebido" style="width:100%;padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);outline:none;margin-bottom:8px;letter-spacing:0.2em;text-align:center;"/>
+          <input type="password" id="cfg-nova-senha-rec" placeholder="Nova senha" style="width:100%;padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);outline:none;margin-bottom:8px;"/>
+          <button class="btn-green" onclick="confirmarRedefinicao()">Redefinir senha</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <button style="width:100%;padding:13px;background:var(--red-l);color:var(--red);border:none;border-radius:var(--r-sm);font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;" onclick="doLogout()">Sair da conta</button>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV 7 abas -->
   <div class="bottomnav">
     <button class="nav-btn active" id="nav-inicio" onclick="switchTab('inicio')">
@@ -393,7 +552,10 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Cotas</span>
     </button>
     <button class="nav-btn" id="nav-forecast" onclick="switchTab('forecast')">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Forecast</span>
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Programa.</span>
+    </button>
+    <button class="nav-btn" id="nav-vendas" onclick="switchTab('vendas')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Vendas</span>
     </button>
   </div>
 </div>
@@ -442,7 +604,7 @@ async function doLogin(){
     document.getElementById('screen-main').classList.remove('hidden');
     document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
     document.getElementById('nf-data').value=new Date().toISOString().split('T')[0];
-    addItem();loadInicio();carregarAlertas();loadTalhoes();gerarSemanas();
+    addItem();loadInicio();carregarAlertas();loadTalhoes();gerarSemanas();document.getElementById('v-data-colheita').value=new Date().toISOString().split('T')[0];document.getElementById('v-data-venda').value=new Date().toISOString().split('T')[0];
   }catch(e){toast('Erro de conexão.');btn.textContent='Entrar';btn.disabled=false;}
 }
 document.getElementById('inp-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
@@ -499,7 +661,7 @@ async function loadRelatorios(){
 
 async function salvarPlantio(){
   const talhao=document.getElementById('f-talhao').value,cultura=document.getElementById('f-cultura').value,variedade=document.getElementById('f-variedade').value.trim(),bandejas=document.getElementById('f-bandejas').value,celulas=document.getElementById('f-celulas').value,data=document.getElementById('f-data').value,previsao=document.getElementById('f-previsao-data').value,insumos=document.getElementById('f-insumos').value.trim(),obs=document.getElementById('f-obs').value.trim();
-  if(!talhao||!cultura||!bandejas||!data){toast('Preencha os campos obrigatórios (*).');return;}
+  if(!talhao||!cultura||!bandejas||!celulas||!data){toast('Preencha talhão, cultura, bandejas, células e data (*).');return;}
   const btn=document.getElementById('btn-salvar');btn.textContent='Salvando...';btn.disabled=true;
   let foto_url=null;const ff=document.getElementById('f-foto').files[0];
   if(ff){foto_url=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(ff);});}
@@ -521,7 +683,38 @@ async function excluirPlantio(id){if(!confirm('Excluir este plantio?'))return;co
 function closeModal(){document.getElementById('modal-edit').classList.add('hidden');}
 
 function calcCelulas(){const b=parseInt(document.getElementById('f-bandejas').value)||0,c=parseInt(document.getElementById('f-celulas').value)||0,box=document.getElementById('f-total-box');if(b&&c){document.getElementById('f-total-celulas').textContent=(b*c).toLocaleString('pt-BR')+' células';box.style.display='block';}else box.style.display='none';}
-function calcPrevisao(){const cultura=document.getElementById('f-cultura').value,data=document.getElementById('f-data').value,dias=getDias(cultura),box=document.getElementById('f-previsao-box');if(dias&&data){const dc=new Date(new Date(data+'T12:00:00').getTime()+dias*86400000);document.getElementById('f-previsao-data').value=dc.toISOString().split('T')[0];atualizarSubPrevisao();box.style.display='block';}else box.style.display='none';}
+function calcPrevisao(){
+  const cultura=document.getElementById('f-cultura').value;
+  const data=document.getElementById('f-data').value;
+  const dias=getDias(cultura);
+  const box=document.getElementById('f-previsao-box');
+  const diasBox=document.getElementById('f-dias-box');
+  if(dias&&data){
+    document.getElementById('f-dias-colheita').value=dias;
+    if(diasBox)diasBox.style.display='block';
+    const dc=new Date(new Date(data+'T12:00:00').getTime()+dias*86400000);
+    document.getElementById('f-previsao-data').value=dc.toISOString().split('T')[0];
+    atualizarSubPrevisao();box.style.display='block';
+  } else if(dias){
+    document.getElementById('f-dias-colheita').value=dias;
+    if(diasBox)diasBox.style.display='block';
+    box.style.display='none';
+  } else {
+    if(diasBox)diasBox.style.display='none';
+    box.style.display='none';
+  }
+}
+
+function calcPrevisaoManual(){
+  const data=document.getElementById('f-data').value;
+  const dias=parseInt(document.getElementById('f-dias-colheita').value)||0;
+  const box=document.getElementById('f-previsao-box');
+  if(dias&&data){
+    const dc=new Date(new Date(data+'T12:00:00').getTime()+dias*86400000);
+    document.getElementById('f-previsao-data').value=dc.toISOString().split('T')[0];
+    atualizarSubPrevisao();box.style.display='block';
+  } else box.style.display='none';
+}
 function atualizarSubPrevisao(){const val=document.getElementById('f-previsao-data').value;if(!val)return;const dc=new Date(val+'T12:00:00'),diff=Math.round((dc-new Date())/86400000);const dataBR=dc.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});document.getElementById('f-previsao-sub').textContent=diff>0?`${dataBR} · Faltam ${diff} dias`:diff===0?'Colheita hoje!':`${dataBR} · Atrasada ${Math.abs(diff)} dias`;}
 function previewFoto(input){const file=input.files[0];if(!file)return;const r=new FileReader();r.onload=e=>{document.getElementById('f-foto-preview').src=e.target.result;document.getElementById('f-foto-preview').style.display='block';document.getElementById('foto-label').textContent=file.name;};r.readAsDataURL(file);}
 function uploadCroqui(input){const file=input.files[0];if(!file)return;const r=new FileReader();r.onload=e=>{const img=document.getElementById('croqui-img');img.src=e.target.result;img.classList.remove('hidden');toast('Croqui carregado!');};r.readAsDataURL(file);}
@@ -632,7 +825,7 @@ async function loadCotas(){
 }
 
 // TABS - adicionar forecast
-const TABS_ALL=['inicio','registrar','cadastro','almoxarifado','qualidade','relatorios','cotas','forecast'];
+const TABS_ALL=['inicio','registrar','cadastro','almoxarifado','qualidade','relatorios','cotas','forecast','vendas','config'];
 function switchTab(tab){
   TABS_ALL.forEach(t=>{
     const el=document.getElementById('tab-'+t);
@@ -646,8 +839,235 @@ function switchTab(tab){
   if(tab==='almoxarifado')loadNFs();
   if(tab==='qualidade')loadQualidade();
   if(tab==='cotas')loadCotas();
-  if(tab==='forecast')loadForecast();
+  if(tab==='forecast'){loadForecast();}
+  if(tab==='vendas')loadVendas();
+  if(tab==='config')loadConfig();
 }
+
+// CONFIGURAÇÕES
+function loadConfig(){
+  if(!currentProdutor)return;
+  const ini=currentProdutor.nome.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('cfg-avatar').textContent=ini;
+  document.getElementById('cfg-nome-display').textContent=currentProdutor.nome;
+  document.getElementById('cfg-prop-display').textContent=(currentProdutor.propriedade||'CAISP')+(currentProdutor.area_ha?' · '+currentProdutor.area_ha+' ha':'');
+  document.getElementById('cfg-user-display').textContent='@'+currentProdutor.usuario;
+  document.getElementById('cfg-email-atual').textContent=currentProdutor.email||'Nenhum email cadastrado';
+  if(currentProdutor.email)document.getElementById('cfg-email').value=currentProdutor.email;
+}
+
+async function salvarEmail(){
+  const email=document.getElementById('cfg-email').value.trim();
+  if(!email||!email.includes('@')){toast('Informe um email válido.');return;}
+  const{error}=await db.from('produtores').update({email}).eq('id',currentProdutor.id);
+  if(error){toast('Erro ao salvar email.');return;}
+  currentProdutor.email=email;
+  document.getElementById('cfg-email-atual').textContent=email;
+  toast('Email salvo com sucesso!');
+}
+
+async function alterarSenha(){
+  const senhaAtual=document.getElementById('cfg-senha-atual').value.trim();
+  const senhaNova=document.getElementById('cfg-senha-nova').value.trim();
+  const senhaConf=document.getElementById('cfg-senha-conf').value.trim();
+  if(!senhaAtual||!senhaNova||!senhaConf){toast('Preencha todos os campos.');return;}
+  if(senhaAtual!==currentProdutor.senha){toast('Senha atual incorreta.');return;}
+  if(senhaNova.length<6){toast('A nova senha precisa ter pelo menos 6 caracteres.');return;}
+  if(senhaNova!==senhaConf){toast('As senhas não coincidem.');return;}
+  const{error}=await db.from('produtores').update({senha:senhaNova}).eq('id',currentProdutor.id);
+  if(error){toast('Erro ao alterar senha.');return;}
+  currentProdutor.senha=senhaNova;
+  ['cfg-senha-atual','cfg-senha-nova','cfg-senha-conf'].forEach(id=>document.getElementById(id).value='');
+  toast('Senha alterada com sucesso! ✓');
+}
+
+// RECUPERAÇÃO DE SENHA POR EMAIL
+let codigoRecuperacao=null;
+let emailRecuperacao=null;
+
+async function solicitarRedefinicao(){
+  const email=document.getElementById('cfg-email-rec').value.trim();
+  if(!email||!email.includes('@')){toast('Informe um email válido.');return;}
+  // Verificar se email existe no banco
+  const{data}=await db.from('produtores').select('id,nome,email').eq('email',email).single();
+  if(!data){toast('Email não encontrado. Verifique ou cadastre seu email nas configurações.');return;}
+  // Gerar código de 6 dígitos
+  codigoRecuperacao=Math.floor(100000+Math.random()*900000).toString();
+  emailRecuperacao=email;
+  // Salvar código temporário no banco (válido por 15 minutos)
+  await db.from('produtores').update({senha_reset_token:codigoRecuperacao,senha_reset_at:new Date().toISOString()}).eq('email',email);
+  // Mostrar código na tela (em produção real, enviaria por email)
+  toast(`Código gerado: ${codigoRecuperacao} (anote este código)`);
+  document.getElementById('cfg-email-rec-area').style.display='none';
+  document.getElementById('cfg-codigo-area').style.display='block';
+  // Mostrar modal com o código
+  setTimeout(()=>{alert(`Código de recuperação: ${codigoRecuperacao}
+
+Em uma integração real, este código seria enviado para ${email}.
+
+Anote este código e use abaixo.`);},300);
+}
+
+async function confirmarRedefinicao(){
+  const codigo=document.getElementById('cfg-codigo').value.trim();
+  const novaSenha=document.getElementById('cfg-nova-senha-rec').value.trim();
+  if(!codigo||!novaSenha){toast('Preencha o código e a nova senha.');return;}
+  if(novaSenha.length<6){toast('A senha precisa ter pelo menos 6 caracteres.');return;}
+  if(codigo!==codigoRecuperacao){toast('Código incorreto. Tente novamente.');return;}
+  // Atualizar senha
+  const{error}=await db.from('produtores').update({senha:novaSenha,senha_reset_token:null,senha_reset_at:null}).eq('email',emailRecuperacao);
+  if(error){toast('Erro ao redefinir senha.');return;}
+  toast('Senha redefinida com sucesso! Faça login novamente.');
+  codigoRecuperacao=null;emailRecuperacao=null;
+  document.getElementById('cfg-codigo-area').style.display='none';
+  document.getElementById('cfg-email-rec-area').style.display='block';
+  ['cfg-codigo','cfg-nova-senha-rec','cfg-email-rec'].forEach(id=>document.getElementById(id).value='');
+  setTimeout(()=>doLogout(),2000);
+}
+
+
+// VENDAS
+async function loadVendas(){
+  if(!currentProdutor)return;
+  await loadTalhoes();
+  // Popular select de talhões nas vendas
+  const{data:talhoes}=await db.from('talhoes').select('*').eq('produtor_id',currentProdutor.id).order('ordem');
+  const optsT=(talhoes&&talhoes.length)?talhoes.map(t=>`<option value="${t.nome}">${t.nome}</option>`).join(''):'<option value="Talhão 1">Talhão 1</option><option value="Talhão 2">Talhão 2</option><option value="Talhão 3">Talhão 3</option>';
+  document.getElementById('v-talhao').innerHTML='<option value="">Selecione o talhão</option>'+optsT;
+  // Carregar lotes
+  const{data:lotes}=await db.from('lotes').select('*,vendas(*)').eq('produtor_id',currentProdutor.id).order('data_colheita',{ascending:false});
+  const lista=lotes||[];
+  // Popular select de lotes para venda
+  const optsL=lista.map(l=>`<option value="${l.id}">${l.talhao} — ${l.cultura?.split(' ')[0]} — Colheita ${l.numero_colheita} (Saldo: ${(l.saldo||0).toLocaleString('pt-BR')} ${l.unidade})</option>`).join('');
+  document.getElementById('v-lote-sel').innerHTML='<option value="">Selecione o lote</option>'+optsL;
+  // Renderizar lotes
+  renderLotes(lista);
+}
+
+function renderLotes(lista){
+  if(!lista.length){document.getElementById('lotes-area').innerHTML='<div class="empty">Nenhum lote criado ainda.</div>';return;}
+  document.getElementById('lotes-area').innerHTML=lista.map(l=>{
+    const vendas=l.vendas||[];
+    const totalVendido=vendas.reduce((s,v)=>s+(v.quantidade||0),0);
+    const totalReceita=vendas.reduce((s,v)=>s+(v.valor_total||0),0);
+    const saldo=l.saldo||0;
+    const qtdColhida=l.quantidade_colhida||0;
+    const pctVendido=qtdColhida>0?Math.round(totalVendido/qtdColhida*100):0;
+    const statusCor=saldo<=0?'var(--red-l)':saldo<qtdColhida*0.2?'var(--amber-l)':'var(--green-l)';
+    return`<div class="lote-card">
+      <div class="lote-head">
+        <div>
+          <div class="lote-nome">${l.talhao} — ${l.cultura?.split(' ')[0]||'—'} — Colheita ${l.numero_colheita||1}</div>
+          <div class="lote-sub">${l.data_colheita?new Date(l.data_colheita+'T12:00:00').toLocaleDateString('pt-BR'):''} · Total colhido: ${(qtdColhida).toLocaleString('pt-BR')} ${l.unidade||''}</div>
+        </div>
+        <div class="lote-saldo" style="background:${statusCor};padding:8px 12px;border-radius:8px;">
+          <div class="lote-saldo-val">${saldo.toLocaleString('pt-BR')}</div>
+          <div class="lote-saldo-lbl">${l.unidade||''} em estoque</div>
+        </div>
+      </div>
+      <div class="lote-body">
+        ${vendas.length?vendas.map(v=>`<div class="venda-row">
+          <div class="venda-info">
+            <div class="venda-qtd">${v.quantidade||0} ${v.unidade||''} → ${v.comprador||'—'}</div>
+            <div class="venda-det">${v.data_venda?new Date(v.data_venda+'T12:00:00').toLocaleDateString('pt-BR'):'—'} · R$ ${(v.preco_unitario||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}/un</div>
+          </div>
+          <div class="venda-val">R$ ${(v.valor_total||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+        </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:8px 0;">Nenhuma venda registrada neste lote.</div>'}
+      </div>
+      ${vendas.length?`<div class="rendimento-box">
+        <div><div style="font-size:11px;color:#854F0B;font-weight:500;">Rendimento do lote</div><div style="font-size:12px;color:#7A4D0A;">${pctVendido}% vendido · ${totalVendido.toLocaleString('pt-BR')} ${l.unidade||''}</div></div>
+        <div style="font-size:16px;font-weight:600;color:#854F0B;">R$ ${totalReceita.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function preencherLote(){
+  const talhao=document.getElementById('v-talhao').value||'—';
+  const cultura=document.getElementById('v-cultura').value;
+  const data=document.getElementById('v-data-colheita').value;
+  const num=document.getElementById('v-num-colheita').value||'1';
+  if(cultura&&data){
+    const nomeLote=`${talhao} — ${cultura.split(' ')[0]} — Colheita ${num} — ${new Date(data+'T12:00:00').toLocaleDateString('pt-BR')}`;
+    document.getElementById('v-lote-nome').textContent=nomeLote;
+    document.getElementById('v-lote-nome-box').style.display='block';
+  } else document.getElementById('v-lote-nome-box').style.display='none';
+}
+
+async function criarLote(){
+  const talhao=document.getElementById('v-talhao').value;
+  const cultura=document.getElementById('v-cultura').value;
+  const data=document.getElementById('v-data-colheita').value;
+  const num=parseInt(document.getElementById('v-num-colheita').value)||1;
+  const qtd=parseFloat(document.getElementById('v-qtd-colhida').value)||0;
+  const unidade=document.getElementById('v-unidade').value;
+  if(!talhao||!cultura||!data||!qtd){toast('Preencha talhão, cultura, data e quantidade.');return;}
+  const btn=document.querySelector('#tab-vendas .btn-green');btn.textContent='Criando...';btn.disabled=true;
+  const{error}=await db.from('lotes').insert({
+    produtor_id:currentProdutor.id,talhao,cultura,
+    data_colheita:data,numero_colheita:num,
+    quantidade_colhida:qtd,saldo:qtd,unidade
+  });
+  btn.textContent='Criar lote';btn.disabled=false;
+  if(error){toast('Erro ao criar lote.');return;}
+  toast('Lote criado!');
+  ['v-talhao','v-cultura','v-num-colheita','v-qtd-colhida'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('v-lote-nome-box').style.display='none';
+  await loadVendas();
+}
+
+function calcValorTotal(){
+  const qtd=parseFloat(document.getElementById('v-qtd-venda').value)||0;
+  const preco=parseFloat(document.getElementById('v-preco-unit').value)||0;
+  const box=document.getElementById('v-valor-total-box');
+  if(qtd&&preco){
+    document.getElementById('v-valor-total').textContent='R$ '+(qtd*preco).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    box.style.display='block';
+  } else box.style.display='none';
+}
+
+async function selecionarLote(){
+  const loteId=document.getElementById('v-lote-sel').value;
+  if(!loteId){document.getElementById('v-saldo-atual').style.display='none';return;}
+  const{data}=await db.from('lotes').select('saldo,unidade').eq('id',loteId).single();
+  if(data){
+    document.getElementById('v-saldo-txt').textContent=`${(data.saldo||0).toLocaleString('pt-BR')} ${data.unidade||''}`;
+    document.getElementById('v-saldo-atual').style.display='block';
+  }
+}
+
+async function registrarVenda(){
+  const loteId=document.getElementById('v-lote-sel').value;
+  const data=document.getElementById('v-data-venda').value;
+  const qtd=parseFloat(document.getElementById('v-qtd-venda').value)||0;
+  const preco=parseFloat(document.getElementById('v-preco-unit').value)||0;
+  const comprador=document.getElementById('v-comprador').value.trim();
+  const obs=document.getElementById('v-obs-venda').value.trim();
+  const unidade=document.getElementById('v-unidade').value;
+  if(!loteId||!data||!qtd){toast('Preencha lote, data e quantidade.');return;}
+  // Verificar saldo
+  const{data:lote}=await db.from('lotes').select('saldo,unidade').eq('id',loteId).single();
+  if(lote&&qtd>(lote.saldo||0)){toast(`Saldo insuficiente. Disponível: ${lote.saldo} ${lote.unidade}`);return;}
+  const btn=document.querySelectorAll('#tab-vendas .btn-green')[1];btn.textContent='Salvando...';btn.disabled=true;
+  // Inserir venda
+  const{error}=await db.from('vendas').insert({
+    lote_id:loteId,produtor_id:currentProdutor.id,
+    data_venda:data,quantidade:qtd,unidade:lote?.unidade||unidade,
+    preco_unitario:preco||null,valor_total:preco?qtd*preco:null,
+    comprador:comprador||null,observacoes:obs||null
+  });
+  if(error){toast('Erro ao registrar venda.');btn.textContent='Registrar venda';btn.disabled=false;return;}
+  // Atualizar saldo do lote
+  const novoSaldo=(lote?.saldo||0)-qtd;
+  await db.from('lotes').update({saldo:novoSaldo,status:novoSaldo<=0?'encerrado':'aberto'}).eq('id',loteId);
+  btn.textContent='Registrar venda';btn.disabled=false;
+  toast('Venda registrada!');
+  ['v-lote-sel','v-qtd-venda','v-preco-unit','v-comprador','v-obs-venda'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('v-saldo-atual').style.display='none';
+  document.getElementById('v-valor-total-box').style.display='none';
+  await loadVendas();
+}
+
 
 // TALHÕES
 async function loadTalhoes(){
@@ -692,18 +1112,28 @@ async function excluirTalhao(id){
 }
 
 // FORECAST
+function getNumeroSemana(data){
+  const d=new Date(Date.UTC(data.getFullYear(),data.getMonth(),data.getDate()));
+  d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));
+  const yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d-yearStart)/86400000)+1)/7);
+}
+
 function gerarSemanas(){
   const semanas=[];
   const hoje=new Date();
   for(let i=0;i<8;i++){
     const seg=new Date(hoje);
-    seg.setDate(hoje.getDate()+(i*7)-(hoje.getDay()||7)+1);
-    const sex=new Date(seg);sex.setDate(seg.getDate()+5);
-    const label=`Semana ${seg.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} a ${sex.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}`;
+    const diasParaSeg=(hoje.getDay()||7)-1;
+    seg.setDate(hoje.getDate()-diasParaSeg+(i*7));
+    const sex=new Date(seg);sex.setDate(seg.getDate()+6);
+    const numSem=getNumeroSemana(seg);
+    const ano=seg.getFullYear();
+    const label=`Semana ${numSem}/${ano} — ${seg.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} a ${sex.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}`;
     semanas.push(label);
   }
   const sel=document.getElementById('fc-semana');
-  sel.innerHTML='<option value="">Selecione a semana</option>'+semanas.map(s=>`<option value="${s}">${s}</option>`).join('');
+  if(sel)sel.innerHTML='<option value="">Selecione a semana</option>'+semanas.map(s=>`<option value="${s}">${s}</option>`).join('');
 }
 
 async function loadForecast(){
