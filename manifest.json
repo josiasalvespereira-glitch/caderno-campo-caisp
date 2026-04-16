@@ -1,0 +1,27 @@
+{
+  "name": "Caderno de Campo CAISP",
+  "short_name": "CAISP Campo",
+  "description": "Caderno de campo digital para produtores hortícolas da CAISP",
+  "start_url": "/caderno-campo-caisp.html",
+  "display": "standalone",
+  "background_color": "#F4F6F3",
+  "theme_color": "#1D9E75",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%231D9E75'/%3E%3Cpath d='M96 20C55.6 20 23 52.6 23 93s32.6 73 73 73 73-32.6 73-73S136.4 20 96 20zm0 26.5a22.4 22.4 0 1 1 0 44.8 22.4 22.4 0 0 1 0-44.8zm0 103.7c-18.6 0-35.1-8.8-45.7-22.5 2.3-15.1 22.9-24 45.7-24s43.4 8.9 45.7 24C131.1 141.4 114.6 150.2 96 150.2z' fill='white'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%231D9E75'/%3E%3Cpath d='M256 50C144.5 50 54 140.5 54 252s90.5 202 202 202 202-90.5 202-202S367.5 50 256 50zm0 71.5a61.5 61.5 0 1 1 0 123 61.5 61.5 0 0 1 0-123zm0 284.7c-51 0-96.3-24.1-125.4-61.7 6.3-41.4 62.8-66 125.4-66s119.1 24.6 125.4 66c-29.1 37.6-74.4 61.7-125.4 61.7z' fill='white'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "agriculture"],
+  "lang": "pt-BR",
+  "scope": "/"
+}
